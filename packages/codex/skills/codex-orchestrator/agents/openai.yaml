@@ -1,0 +1,7 @@
+interface:
+  display_name: "Codex Orchestrator"
+  short_description: "Coordinate implementation with fresh verification"
+  default_prompt: "Use $codex-orchestrator to implement this change with proportional exploration and fresh verification."
+
+policy:
+  allow_implicit_invocation: false
