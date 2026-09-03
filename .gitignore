@@ -1,4 +1,10 @@
+# Python development artifacts
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Editor and operating-system metadata
+.vscode/
+.idea/
 .DS_Store
-Thumbs.db
-*.tmp
-*.log

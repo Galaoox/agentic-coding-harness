@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The monorepo separates runtime-neutral workflow contracts from runtime integrations.
+The monorepo separates runtime-neutral workflow principles from runtime integrations.
 
 ```text
 packages/
@@ -14,32 +14,42 @@ packages/
 
 ## Current boundary
 
-Codex is the only supported runtime. The repository may add adapters for OpenCode or other systems later, but current contracts must not depend on unimplemented adapters.
+Codex is the only supported runtime. The repository may add adapters for OpenCode or other systems later, but v1.2 does not define an adapter interface or depend on unimplemented runtimes.
 
-## Design direction
+## Codex v1.2 design
 
-The current `codex-orchestrator` skill is preserved as a baseline. Future revisions will evaluate an adaptive topology with proportional routes:
+`packages/codex/skills/codex-orchestrator` defines one Codex-specific, explicitly invoked orchestration contract:
 
-- atomic;
-- normal;
-- complex or long-running;
-- high-risk.
+```text
+Direct
+  DEFINE → ROOT_IMPLEMENT → DETERMINISTIC_CHECKS → TERMINAL
 
-Each change to the workflow should be supported by a realistic task, observed failure, or evaluation result. Avoid adding roles, review passes, documents, or protocol states only for theoretical completeness.
+Standard
+  DEFINE → EXPLORE? → IMPLEMENT → DETERMINISTIC_CHECKS → REVIEW? → TERMINAL
+                 + long-running?
+                 + high-risk?
+```
 
-## Authority model
+`Direct` is permitted only when outcome, edit location, risk and deterministic evidence are clear. Root may write only on this route. Any uncertainty promotes work to `Standard`.
 
-Current evidence has precedence over historical memory:
+`Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. `long-running` and `high-risk` modify Standard safeguards without creating separate role graphs or state machines.
+
+The authoritative implementation details remain in `packages/codex/skills/codex-orchestrator/references/orchestration-contract.md`; this document intentionally does not duplicate every gate.
+
+## Evidence authority
+
+Current evidence has precedence over historical memory and agent opinion:
 
 1. Current user request and acceptance criteria.
-2. Current code, configuration, and executable tests.
+2. Current candidate code, configuration, and executable evidence.
 3. Versioned repository policies and documentation.
-4. Current ADRs and recorded decisions.
+4. Versioned decisions.
 5. Git history and issue context.
 6. Retrieved memory.
+7. Agent narration and opinion.
 
-Memory can locate relevant history. It cannot authorize a present decision without verification.
+Memory can locate relevant history. It cannot authorize a present decision without verification. Likewise, reviewer output supplies findings but cannot override failed deterministic checks, scope/policy violations, missing evidence, or a blocked required approval.
 
 ## Extension strategy
 
-A future runtime integration should implement shared contracts without changing their semantics. Runtime-specific configuration, prompts, transport, and lifecycle behavior belong in that runtime's package.
+A future runtime integration should reuse only stable, evidence-oriented principles from `packages/core`. Runtime-specific prompts, tool semantics, metadata, lifecycle behavior, and installation remain in the runtime package. Do not promote the Codex v1.2 state model into a universal adapter until a second concrete runtime demonstrates that abstraction is necessary.
