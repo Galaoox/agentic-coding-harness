@@ -90,6 +90,40 @@ def validate_metadata(path: Path, errors: list[str]) -> None:
         errors.append(f"allow_implicit_invocation must be false in {path}")
 
 
+def validate_model_policy(path: Path, errors: list[str]) -> None:
+    content = read_text(path, errors)
+    try:
+        policy = yaml.safe_load(content)
+    except yaml.YAMLError as exc:
+        errors.append(f"model routing YAML invalid in {path}: {exc}")
+        return
+    if not isinstance(policy, dict) or policy.get("schema_version") != 1:
+        errors.append(f"model routing schema_version must be 1 in {path}")
+        return
+    models = policy.get("models")
+    if not isinstance(models, dict):
+        errors.append(f"model routing models must be a mapping in {path}")
+        return
+    expected_roles = {
+        "sol": "root-orchestration",
+        "terra": "standard-engineering",
+        "luna": "mechanical-checked-work",
+    }
+    for model, expected_role in expected_roles.items():
+        config = models.get(model)
+        if not isinstance(config, dict):
+            errors.append(f"model routing entry missing for {model}")
+            continue
+        if model == "sol" and config.get("default_effort") != "medium":
+            errors.append("Sol default_effort must be medium")
+        elif model != "sol" and config.get("default_effort") not in {"medium", "high"}:
+            errors.append(f"{model} default_effort must be medium or high")
+        if config.get("max_effort") != "high":
+            errors.append(f"{model.capitalize()} max_effort must be high")
+        if config.get("default_role") != expected_role:
+            errors.append(f"{model} default_role must be {expected_role}")
+
+
 def validate_references(root: Path, path: Path, content: str, errors: list[str]) -> None:
     for match in re.finditer(REFERENCE.pattern, content):
         reference = match.group(0).strip()
@@ -108,33 +142,43 @@ def validate_package(root: Path) -> list[str]:
     package = package_root(root)
     skill_path = package / "SKILL.md"
     metadata_path = package / "agents/openai.yaml"
+    model_policy_path = package / "references/model-routing.yaml"
 
-    for required in (skill_path, metadata_path, package / "references/orchestration-contract.md"):
+    required_references = (
+        "index.md",
+        "direct.md",
+        "standard.md",
+        "evidence.md",
+        "model-routing.md",
+        "long-running.md",
+        "high-risk.md",
+    )
+    for required in (skill_path, metadata_path, model_policy_path, *(package / "references" / name for name in required_references)):
         if not required.is_file():
             errors.append(f"required package file missing: {required}")
 
     skill_content = read_text(skill_path, errors)
     validate_frontmatter(skill_path, skill_content, errors)
     validate_metadata(metadata_path, errors)
+    validate_model_policy(model_policy_path, errors)
 
     markdown_files = sorted(package.rglob("*.md"))
     combined = "\n".join(read_text(path, errors) for path in markdown_files)
-    contract_path = package / "references/orchestration-contract.md"
-    contract_content = read_text(contract_path, errors)
     for path in markdown_files:
         content = read_text(path, errors)
-        validate_references(root, path, content, errors)
+        validate_references(package, path, content, errors)
         if LOCAL_PATH.search(content):
             errors.append(f"machine-local path found in {path}")
         if "[SKILL_PRUNED]" in content or "TODO" in content:
             errors.append(f"unresolved placeholder found in {path}")
 
     for term in REQUIRED_TERMS:
-        if term not in contract_content:
-            errors.append(f"required term missing from contract: {term}")
+        if term not in combined:
+            errors.append(f"required term missing from Codex references: {term}")
 
     for term in LEGACY_ROUTE_TERMS:
-        if re.search(rf"\b{re.escape(term)}\b", combined, flags=re.IGNORECASE):
+        pattern = rf"(?:\b{re.escape(term)}\s+route\b|\broute\s+{re.escape(term)}\b)"
+        if re.search(pattern, combined, flags=re.IGNORECASE):
             errors.append(f"legacy route term found in package: {term}")
 
     return errors

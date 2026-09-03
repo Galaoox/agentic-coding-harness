@@ -1,4 +1,11 @@
 # Architecture
+<!-- supported-runtimes: codex, opencode -->
+
+## Knowledge and context architecture
+
+`AGENTS.md` is the compact always-loaded map. [`docs/index.md`](index.md) catalogs the repository knowledge base, while [`docs/knowledge-base.yaml`](knowledge-base.yaml) supplies the machine-readable document and context-scenario inventory. Detailed route, modifier, runtime, decision, research, and evaluation material is loaded only when relevant and is checked for drift by deterministic validators.
+
+Repository docs describe the system; distributable runtime packages remain self-contained so installed consumers do not depend on repository-only paths.
 
 ## Purpose
 
@@ -18,9 +25,9 @@ packages/
 
 ## Runtime boundaries
 
-Codex v1.2 and OpenCode v0.1 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` contains only shared invariants: Direct/Standard routing, modifiers, evidence authority, one writer, one correction and terminal states. Runtime packages own their activation, agent/tool configuration, permissions, lifecycle semantics and installation.
+Codex v1.3 and OpenCode v0.2 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` contains only shared invariants: Direct/Standard routing, modifiers, evidence authority, one writer, one correction and terminal states. Runtime packages own their activation, agent/tool configuration, permissions, lifecycle semantics and installation.
 
-## Codex v1.2 design
+## Codex v1.3 design
 
 `packages/codex/skills/codex-orchestrator` defines one Codex-specific, explicitly invoked orchestration contract:
 
@@ -38,9 +45,9 @@ Standard
 
 `Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. `long-running` and `high-risk` modify Standard safeguards without creating separate role graphs or state machines.
 
-The authoritative implementation details remain in `packages/codex/skills/codex-orchestrator/references/orchestration-contract.md`; this document intentionally does not duplicate every gate.
+The distributable reference map starts at `packages/codex/skills/codex-orchestrator/references/index.md` and loads route, modifier, model, and evidence references conditionally. This document intentionally does not duplicate every gate.
 
-## OpenCode v0.1 design
+## OpenCode v0.2 design
 
 `packages/opencode/overlay/.opencode` provides `/orchestrate`, a primary `harness-orchestrator`, and hidden `harness-explorer`, `harness-implementer`, and `harness-verifier` subagents. The overlay is installed per project; it does not mutate global config or select a provider/model.
 
@@ -64,4 +71,4 @@ Memory can locate relevant history. It cannot authorize a present decision witho
 
 ## Extension strategy
 
-A future runtime integration should reuse only stable, evidence-oriented principles from `packages/core`. Runtime-specific prompts, tool semantics, metadata, lifecycle behavior, and installation remain in the runtime package. Do not promote the Codex v1.2 state model into a universal adapter until a second concrete runtime demonstrates that abstraction is necessary.
+A future runtime integration should reuse only stable, evidence-oriented principles already demonstrated across `packages/core`. Runtime-specific prompts, tool semantics, metadata, lifecycle behavior, and installation remain in each runtime package; new shared abstractions require evidence from concrete adapters rather than one runtime's implementation.

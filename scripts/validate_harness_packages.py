@@ -63,7 +63,18 @@ def validate_opencode_package(root: Path) -> list[str]:
         errors.append("OpenCode VERSION must be semver")
     agent_dir = overlay / "agents"
     command = overlay / "commands/orchestrate.md"
-    contract = overlay / "references/orchestration-contract.md"
+    reference_dir = overlay / "references"
+    required_references = {
+        "index.md",
+        "direct.md",
+        "standard.md",
+        "evidence.md",
+        "long-running.md",
+        "high-risk.md",
+    }
+    actual_references = {path.name for path in reference_dir.glob("*.md")}
+    if actual_references != required_references:
+        errors.append("OpenCode references must contain exactly the modular contract set")
     agent_paths = {path.stem: path for path in agent_dir.glob("*.md")}
     expected = {"harness-orchestrator", *ALLOWED_WORKERS}
     if set(agent_paths) != expected:
@@ -93,10 +104,10 @@ def validate_opencode_package(root: Path) -> list[str]:
     implementer = parsed.get(WRITER, {})
     if implementer.get("mode") != "subagent" or action(implementer.get("permission", {}), "edit") != "allow" or action(implementer.get("permission", {}), "task") != "deny":
         errors.append("harness-implementer must be the only writer subagent with task denied")
-    content = read(contract, errors)
+    reference_content = "\n".join(read(path, errors) for path in sorted(reference_dir.glob("*.md")))
     for term in REQUIRED_TERMS:
-        if term not in content:
-            errors.append(f"required term missing from OpenCode contract: {term}")
+        if term not in reference_content:
+            errors.append(f"required term missing from OpenCode references: {term}")
     all_files = list(package.rglob("*.md")) + list(package.rglob("*.jsonc"))
     for path in all_files:
         file_content = read(path, errors)
@@ -104,12 +115,16 @@ def validate_opencode_package(root: Path) -> list[str]:
             errors.append(f"machine-local path found in {path}")
         if "[SKILL_PRUNED]" in file_content or "TODO" in file_content:
             errors.append(f"unresolved placeholder found in {path}")
-        for link in MARKDOWN_LINK.findall(file_content):
-            resolved = (path.parent / link).resolve()
-            try:
-                resolved.relative_to(overlay.resolve())
-            except ValueError:
-                errors.append(f"markdown reference escapes installed overlay in {path}: {link}")
+        if path.is_relative_to(overlay):
+            for link in MARKDOWN_LINK.findall(file_content):
+                resolved = (path.parent / link).resolve()
+                try:
+                    resolved.relative_to(overlay.resolve())
+                except ValueError:
+                    errors.append(f"markdown reference escapes installed overlay in {path}: {link}")
+                else:
+                    if not resolved.is_file():
+                        errors.append(f"missing markdown reference in {path}: {link}")
     if list(package.rglob("openai.yaml")):
         errors.append("Codex metadata openai.yaml is forbidden in OpenCode package")
     return errors
@@ -118,6 +133,12 @@ def validate_opencode_package(root: Path) -> list[str]:
 def main() -> int:
     root = Path.cwd()
     errors = validate_codex_package(root) + validate_opencode_package(root)
+    try:
+        from validate_knowledge_base import validate_knowledge_base
+    except ImportError as exc:
+        errors.append(f"cannot import knowledge-base validator: {exc}")
+    else:
+        errors.extend(validate_knowledge_base(root))
     if errors:
         print("Harness package validation failed:")
         for error in errors:
