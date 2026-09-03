@@ -1,0 +1,65 @@
+schema_version: 1
+supported_runtimes:
+  - codex
+  - opencode
+
+documents:
+  - {path: docs/index.md, authority: normative, status: current, scope: repository}
+  - {path: docs/architecture.md, authority: normative, status: current, scope: repository}
+  - {path: docs/contracts/index.md, authority: normative, status: current, scope: contracts}
+  - {path: docs/runtimes/codex.md, authority: normative, status: current, scope: codex}
+  - {path: docs/runtimes/opencode.md, authority: normative, status: current, scope: opencode}
+  - {path: packages/core/contracts/evidence-driven-orchestration.md, authority: normative, status: current, scope: core}
+  - {path: packages/core/principles/memory-authority.md, authority: normative, status: current, scope: core}
+  - {path: docs/decisions/0001-opencode-command-and-agent-overlay.md, authority: historical, status: completed, scope: opencode}
+  - {path: docs/evaluation/v1.2-smoke-cases.md, authority: reference, status: current, scope: codex}
+  - {path: docs/evaluation/v1.2-smoke-results.md, authority: evidence, status: completed, scope: codex}
+  - {path: docs/evaluation/opencode-v0.1-smoke-cases.md, authority: reference, status: current, scope: opencode}
+  - {path: docs/evaluation/opencode-v0.1-smoke-results.md, authority: evidence, status: completed, scope: opencode}
+  - {path: docs/research/opencode-capability-matrix.md, authority: evidence, status: completed, scope: opencode}
+  - {path: docs/baselines/codex-orchestrator-v1.1.md, authority: historical, status: superseded, scope: codex}
+
+context_scenarios:
+  repository-bootstrap:
+    files: [AGENTS.md]
+  codex-direct:
+    files:
+      - packages/codex/skills/codex-orchestrator/SKILL.md
+      - packages/codex/skills/codex-orchestrator/references/direct.md
+      - packages/codex/skills/codex-orchestrator/references/evidence.md
+  codex-standard:
+    files:
+      - packages/codex/skills/codex-orchestrator/SKILL.md
+      - packages/codex/skills/codex-orchestrator/references/standard.md
+      - packages/codex/skills/codex-orchestrator/references/model-routing.md
+      - packages/codex/skills/codex-orchestrator/references/evidence.md
+  codex-standard-long-running:
+    files:
+      - packages/codex/skills/codex-orchestrator/SKILL.md
+      - packages/codex/skills/codex-orchestrator/references/standard.md
+      - packages/codex/skills/codex-orchestrator/references/model-routing.md
+      - packages/codex/skills/codex-orchestrator/references/evidence.md
+      - packages/codex/skills/codex-orchestrator/references/long-running.md
+  codex-standard-high-risk:
+    files:
+      - packages/codex/skills/codex-orchestrator/SKILL.md
+      - packages/codex/skills/codex-orchestrator/references/standard.md
+      - packages/codex/skills/codex-orchestrator/references/model-routing.md
+      - packages/codex/skills/codex-orchestrator/references/evidence.md
+      - packages/codex/skills/codex-orchestrator/references/high-risk.md
+  opencode-direct:
+    files:
+      - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
+      - packages/opencode/overlay/.opencode/references/direct.md
+      - packages/opencode/overlay/.opencode/references/evidence.md
+  opencode-standard:
+    files:
+      - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
+      - packages/opencode/overlay/.opencode/references/standard.md
+      - packages/opencode/overlay/.opencode/references/evidence.md
+  opencode-standard-high-risk:
+    files:
+      - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
+      - packages/opencode/overlay/.opencode/references/standard.md
+      - packages/opencode/overlay/.opencode/references/evidence.md
+      - packages/opencode/overlay/.opencode/references/high-risk.md

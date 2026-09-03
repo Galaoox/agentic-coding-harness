@@ -1,5 +1,11 @@
 # Architecture
 
+## Knowledge and context architecture
+
+`AGENTS.md` is the compact always-loaded map. [`docs/index.md`](index.md) catalogs the repository knowledge base, while [`docs/knowledge-base.yaml`](knowledge-base.yaml) supplies the machine-readable document and context-scenario inventory. Detailed route, modifier, runtime, decision, research, and evaluation material is loaded only when relevant and is checked for drift by deterministic validators.
+
+Repository docs describe the system; distributable runtime packages remain self-contained so installed consumers do not depend on repository-only paths.
+
 ## Purpose
 
 The monorepo separates runtime-neutral workflow principles from runtime integrations.
