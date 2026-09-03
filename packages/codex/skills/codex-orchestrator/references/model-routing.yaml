@@ -1,0 +1,14 @@
+schema_version: 1
+models:
+  sol:
+    default_effort: medium
+    max_effort: high
+    default_role: root-orchestration
+  terra:
+    default_effort: medium
+    max_effort: high
+    default_role: standard-engineering
+  luna:
+    default_effort: medium
+    max_effort: high
+    default_role: mechanical-checked-work

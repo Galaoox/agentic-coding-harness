@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -34,6 +35,32 @@ def test_install_rejects_conflicting_destination(tmp_path: Path) -> None:
         INSTALLER.install(target)
 
 
+def test_install_rejects_parent_symlink_escape(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (target / ".opencode").mkdir(parents=True)
+    (target / ".opencode/agents").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(INSTALLER.InstallConflict):
+        INSTALLER.install(target)
+
+    assert list(outside.iterdir()) == []
+
+
+def test_install_rejects_manifest_symlink_escape(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    (target / ".opencode").mkdir(parents=True)
+    victim = tmp_path / "victim.json"
+    victim.write_text("preserve", encoding="utf-8")
+    INSTALLER.manifest_path(target).symlink_to(victim)
+
+    with pytest.raises(INSTALLER.InstallConflict):
+        INSTALLER.install(target)
+
+    assert victim.read_text(encoding="utf-8") == "preserve"
+
+
 def test_uninstall_preserves_modified_and_unrelated_files(tmp_path: Path) -> None:
     target = tmp_path / "target"
     INSTALLER.install(target)
@@ -45,6 +72,91 @@ def test_uninstall_preserves_modified_and_unrelated_files(tmp_path: Path) -> Non
     assert removed
     assert tracked in preserved
     assert unrelated.exists()
+
+
+def test_uninstall_rejects_manifest_path_escape(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    manifest = INSTALLER.manifest_path(target)
+    manifest.parent.mkdir(parents=True)
+    victim = target / "victim.txt"
+    victim.write_text("do not delete", encoding="utf-8")
+    manifest.write_text(
+        json.dumps({"version": "0.2.0", "files": {"../victim.txt": INSTALLER.digest(victim)}}),
+        encoding="utf-8",
+    )
+
+    removed, preserved = INSTALLER.uninstall(target)
+
+    assert removed == []
+    assert victim.exists()
+    assert victim in preserved
+
+
+def test_uninstall_rejects_overlay_symlink_escape(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    target.mkdir()
+    (target / ".opencode").symlink_to(outside, target_is_directory=True)
+    victim = outside / "victim.txt"
+    victim.write_text("do not delete", encoding="utf-8")
+    (outside / INSTALLER.MANIFEST_NAME).write_text(
+        json.dumps({"version": "0.2.0", "files": {"victim.txt": INSTALLER.digest(victim)}}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(INSTALLER.InstallConflict):
+        INSTALLER.uninstall(target)
+
+    assert victim.exists()
+
+
+def test_uninstall_preserves_symlinked_manifest_entry(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    overlay = target / ".opencode"
+    overlay.mkdir(parents=True)
+    victim = overlay / "victim.txt"
+    victim.write_text("do not delete", encoding="utf-8")
+    link = overlay / "managed-link.md"
+    link.symlink_to(victim)
+    INSTALLER.manifest_path(target).write_text(
+        json.dumps({"version": "0.2.0", "files": {link.name: INSTALLER.digest(victim)}}),
+        encoding="utf-8",
+    )
+
+    removed, preserved = INSTALLER.uninstall(target)
+
+    assert removed == []
+    assert link in preserved
+    assert link.is_symlink()
+    assert victim.exists()
+
+
+def test_install_writes_current_version_and_verifies_modular_references(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    INSTALLER.install(target)
+
+    assert INSTALLER.verify_install(target) == []
+    manifest = INSTALLER.manifest_path(target).read_text(encoding="utf-8")
+    assert '"version": "0.2.0"' in manifest
+    for name in ("index.md", "direct.md", "standard.md", "evidence.md", "long-running.md", "high-risk.md"):
+        assert (target / ".opencode/references" / name).is_file()
+
+
+def test_verify_install_rejects_modified_file_and_version_drift(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    INSTALLER.install(target)
+    installed = target / ".opencode/references/direct.md"
+    installed.write_text("corrupt\n", encoding="utf-8")
+    manifest_path = INSTALLER.manifest_path(target)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["version"] = "0.1.0"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    errors = INSTALLER.verify_install(target)
+
+    assert any("version mismatch" in error for error in errors)
+    assert any("digest mismatch" in error for error in errors)
 
 
 def test_verify_install_reports_missing_command(tmp_path: Path) -> None:

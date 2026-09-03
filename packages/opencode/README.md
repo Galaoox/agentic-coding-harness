@@ -1,8 +1,8 @@
 # OpenCode adapter
 
-Version: `0.1.0`
+Version: `0.2.0`
 
-This package adapts the evidence-driven `Direct | Standard` harness to OpenCode `1.18.x` using a project-scoped overlay. It does not configure providers, models, MCP servers, global OpenCode configuration, plugins, SDK orchestration, or automatic merge behavior.
+This package adapts the evidence-driven `Direct | Standard` harness to OpenCode `1.18.x` using a project-scoped overlay. It remains provider/model neutral and does not configure MCP servers, global settings, plugins, SDK orchestration, or merge behavior.
 
 ## Install
 
@@ -12,9 +12,9 @@ uv run python packages/opencode/install/install.py --target /path/to/project
 uv run python packages/opencode/install/verify_install.py --target /path/to/project
 ```
 
-The installer copies only its known overlay files to `/path/to/project/.opencode/`, records a digest manifest, is idempotent, and aborts on a different destination file. It never overwrites an existing `opencode.json` or `opencode.jsonc`.
+The installer copies known overlay files, records their hashes with the package version, is idempotent, aborts on conflicting destinations, and rejects manifest/symlink paths outside the managed overlay. It never overwrites `opencode.json` or `opencode.jsonc`.
 
-Use this optional project config fragment only after review:
+Optional reviewed project fragment:
 
 ```jsonc
 {
@@ -25,31 +25,32 @@ Use this optional project config fragment only after review:
 
 ## Run
 
-Normal interactive entry: `/orchestrate <request>`.
-
-For automation after provider/model configuration:
+Interactive entry: `/orchestrate <request>`.
 
 ```bash
 opencode run --command orchestrate --format json '<request>'
 ```
 
-`opencode run --agent harness-orchestrator` is useful only for isolated agent diagnostics; it does not validate command wiring.
+The Root starts at `.opencode/references/index.md`, loads only the selected route and modifiers, and loads `evidence.md` before terminal acceptance.
 
 ## Guarantees and limitations
 
-- Exactly two routes: Direct and Standard. `long-running` and `high-risk` are modifiers.
-- Root can write only in Direct by process contract. Standard has one Implementer writer.
-- Explorer denies edit, bash, and task. Verifier denies edit/task and has an approval-gated shell allowlist.
-- OpenCode permissions are defense-in-depth, not sandboxing: static permissions cannot change by route, and shell may write if enabled.
-- Evidence gates, exit codes, candidate diff and required approvals override agent/reviewer narration.
-- Engram is optional and subordinate to current code/tests; see `examples/engram-mcp.jsonc` for a non-working placeholder shape that must be replaced with a verified project-specific server configuration.
+- Routes are Direct and Standard; `long-running` and `high-risk` are modifiers.
+- Root writes only in Direct by contract. Standard has one Implementer writer.
+- Explorer denies edit/bash/task. Verifier denies edit/task and has an approval-gated shell allowlist.
+- Permissions are defense-in-depth, not sandboxing; shell can write when enabled.
+- Candidate evidence, exit codes, diff, and approvals outrank narration.
+- JSONL is telemetry, not proof of correctness.
+- Engram is optional historical context; `examples/engram-mcp.jsonc` is a non-working placeholder shape.
 
-## Uninstall / rollback
+## Upgrade and uninstall
+
+v0.2 replaces the monolithic orchestration reference with modular references. Because installation is conflict-safe, uninstall a matching v0.1 overlay before installing v0.2, or review/remove only the obsolete managed reference after preserving local modifications.
 
 ```bash
 uv run python packages/opencode/install/install.py --target /path/to/project --uninstall
 ```
 
-Uninstall removes only manifest-tracked files whose digests still match; it preserves modified and unrelated files. OpenCode itself may create `.opencode/package.json`, lockfiles or `node_modules`; these are not installer-owned and are left for project review/removal.
+Uninstall removes only manifest-tracked files whose hashes still match. Runtime-created package metadata, lockfiles, or `node_modules` are not installer-owned.
 
-See `docs/research/opencode-capability-matrix.md` for version-specific evidence and `docs/evaluation/opencode-v0.1-smoke-results.md` for behavioral results.
+See [`../../docs/research/opencode-capability-matrix.md`](../../docs/research/opencode-capability-matrix.md) and [`../../docs/evaluation/opencode-v0.1-smoke-results.md`](../../docs/evaluation/opencode-v0.1-smoke-results.md) for version-specific historical evidence.

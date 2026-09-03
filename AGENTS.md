@@ -1,4 +1,5 @@
 # Repository instructions
+<!-- supported-runtimes: codex, opencode -->
 
 ## Scope
 

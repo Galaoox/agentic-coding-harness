@@ -46,8 +46,8 @@ def test_rejects_non_allowlisted_root_task_agent(tmp_path: Path) -> None:
 
 def test_rejects_local_path_and_codex_metadata(tmp_path: Path) -> None:
     root = copy_packages(tmp_path)
-    contract = root / "packages/opencode/overlay/.opencode/references/orchestration-contract.md"
-    contract.write_text(contract.read_text(encoding="utf-8") + "\n/home/example/private\n", encoding="utf-8")
+    evidence = root / "packages/opencode/overlay/.opencode/references/evidence.md"
+    evidence.write_text(evidence.read_text(encoding="utf-8") + "\n/home/example/private\n", encoding="utf-8")
     (root / "packages/opencode/overlay/.opencode/agents/openai.yaml").write_text("x", encoding="utf-8")
     errors = VALIDATOR.validate_opencode_package(root)
     assert any("machine-local path" in error for error in errors)
@@ -56,6 +56,13 @@ def test_rejects_local_path_and_codex_metadata(tmp_path: Path) -> None:
 
 def test_rejects_contract_reference_outside_installed_overlay(tmp_path: Path) -> None:
     root = copy_packages(tmp_path)
-    contract = root / "packages/opencode/overlay/.opencode/references/orchestration-contract.md"
-    contract.write_text(contract.read_text(encoding="utf-8") + "\n[external](../../../../core/contracts/evidence-driven-orchestration.md)\n", encoding="utf-8")
+    index = root / "packages/opencode/overlay/.opencode/references/index.md"
+    index.write_text(index.read_text(encoding="utf-8") + "\n[external](../../../../core/contracts/evidence-driven-orchestration.md)\n", encoding="utf-8")
     assert any("escapes installed overlay" in error for error in VALIDATOR.validate_opencode_package(root))
+
+
+def test_rejects_missing_reference_inside_installed_overlay(tmp_path: Path) -> None:
+    root = copy_packages(tmp_path)
+    index = root / "packages/opencode/overlay/.opencode/references/index.md"
+    index.write_text(index.read_text(encoding="utf-8") + "\n[missing](missing.md)\n", encoding="utf-8")
+    assert any("missing markdown reference" in error for error in VALIDATOR.validate_opencode_package(root))

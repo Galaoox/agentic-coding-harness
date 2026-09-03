@@ -1,63 +1,55 @@
 # Agentic Coding Harness
+<!-- supported-runtimes: codex, opencode -->
 
-A multi-runtime monorepo for bounded, evidence-driven software-development workflows.
+A multi-runtime monorepo for bounded, evidence-driven software-development workflows with progressive context loading.
 
 Supported adapters:
 
-- Codex v1.2 — explicitly invoked skill package.
-- OpenCode v0.1 — project-scoped command/agent overlay, validated against OpenCode 1.18.27.
+- Codex v1.3 — explicitly invoked skill; Sol `medium` by default and `high` as the hard ceiling.
+- OpenCode v0.2 — project-scoped command/agent overlay, provider-neutral and validated against OpenCode 1.18.x.
 
-## v1.2 workflow
+## Knowledge and context
 
-`codex-orchestrator` has two routes:
+[`AGENTS.md`](AGENTS.md) is the compact map. [`docs/index.md`](docs/index.md) is the human knowledge index and [`docs/knowledge-base.yaml`](docs/knowledge-base.yaml) declares normative documents and context scenarios. Route, modifier, model, and evidence references load only when applicable.
+
+## Workflow
+
+Exactly two routes are supported:
 
 | Route | Use when | Flow |
 |---|---|---|
-| `Direct` | The outcome, edit location, risk and deterministic evidence are all clear | Root implements → checks → terminal state |
-| `Standard` | Any Direct gate is uncertain or false | Explore only if needed → one Implementer → checks → gated fresh review → terminal state |
+| `Direct` | Outcome, edit location, risk, and deterministic evidence are clear | Root implements → checks → terminal state |
+| `Standard` | Any Direct gate is false or uncertain | Explore if gated → one Implementer → checks → gated fresh review → terminal state |
 
-Two modifiers apply only to Standard:
+`long-running` and `high-risk` modify Standard; they are not routes. Work remains serial with one writer for coupled changes and at most one correction.
 
-- `long-running`: independently verified units, checkpoints, and concise handoffs.
-- `high-risk`: baseline, rollback, relevant negative checks, fresh review, and human approval before irreversible/external effects.
+## Model policy for Codex
 
-The workflow remains serial in v1.2. It does not fan out writers or reviewers.
+| Work | Model | Initial effort |
+|---|---|---|
+| Root planning and orchestration | Sol | `medium` |
+| Material architecture, security, or high-risk review | Sol | `high` maximum |
+| Mechanical, strongly checked implementation | Luna | `medium` or `high` |
+| Everyday Standard implementation/exploration | Terra | `medium` |
+| Difficult bounded debugging or normal verification | Terra | `high` |
 
-## Principles
+OpenCode does not pin a provider or model.
 
-- Route work by uncertainty, risk, coupling, and verifiability—not file count.
-- Keep one implementation owner for coupled Standard changes.
-- Prefer executable evidence over agent narration.
-- Run review only for explicit residual-risk gates; reviewer output is findings, not terminal authority.
-- Use Engram to recover the past, never to decide the present.
-- Keep required rules and authoritative decisions in versioned repository files.
+## Evidence authority
 
-## Terminal states
-
-| State | Meaning |
-|---|---|
-| `VERIFIED` | Every required criterion has valid evidence and no gate failed. |
-| `VERIFIED_WITH_RISKS` | Criteria have valid evidence; residual risks are documented and non-blocking. |
-| `FAILED` | A criterion, required check, policy/scope gate, or reproducible blocking finding failed. |
-| `BLOCKED` | Required context, permission, tool, environment, or approval is unavailable. |
-
-A textual reviewer `PASS` cannot override failed checks, missing evidence, or a blocked approval.
+Candidate-specific executable evidence outranks agent/reviewer narration, repository history, and retrieved memory. Terminal states are `VERIFIED`, `VERIFIED_WITH_RISKS`, `FAILED`, and `BLOCKED`.
 
 ## Repository layout
 
 ```text
-packages/
-  core/                         Shared principles, including memory authority
-  codex/
-    README.md                   Codex installation and package boundaries
-    skills/codex-orchestrator/  Explicitly invoked orchestration skill
-  opencode/
-    overlay/.opencode/          Project-scoped command, agents and contract
-    install/                    Conflict-safe installer and verifier
-docs/
-  architecture.md               Boundaries and extension strategy
-  baselines/                    Versioned workflow comparisons
-  evaluation/                   Smoke-case specs and real execution records
+AGENTS.md                         Compact always-loaded map
+docs/index.md                    Repository knowledge map
+docs/knowledge-base.yaml         Document and context-scenario catalog
+packages/core/                   Shared invariants
+packages/codex/                  Codex skill and conditional references
+packages/opencode/               OpenCode overlay, installer, and verifier
+scripts/                         Validators, context report, smoke tooling
+tests/                           Static, installation, and runtime tests
 ```
 
 ## Validation
@@ -67,15 +59,26 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/):
 ```bash
 uv sync --frozen
 uv run pytest -q
+uv run python scripts/validate_knowledge_base.py
 uv run python scripts/validate_harness_packages.py
 uv run python scripts/validate_codex_package.py
+uv run python scripts/report_context_budget.py
+uv run python -m py_compile \
+  scripts/validate_knowledge_base.py \
+  scripts/validate_harness_packages.py \
+  scripts/validate_codex_package.py \
+  scripts/report_context_budget.py \
+  scripts/run_opencode_smoke.py \
+  packages/opencode/install/install.py \
+  packages/opencode/install/verify_install.py
+git diff --check
 ```
 
-The static validators check package structure and consistency. They do not prove model behavior; see `docs/evaluation/v1.2-smoke-cases.md` and `docs/evaluation/opencode-v0.1-smoke-cases.md` for real-runtime scenarios and recorded status.
+Static validation proves structure and declared invariants, not model behavior. Runtime evidence and limitations live under [`docs/evaluation/`](docs/evaluation/).
 
 ## Status
 
-Experimental. v1.2 is a scoped evolution of the v1.1 baseline, not a complete agent framework.
+Experimental. Runtime capability and behavioral claims are version-specific and must be revalidated against the current candidate.
 
 ## License
 

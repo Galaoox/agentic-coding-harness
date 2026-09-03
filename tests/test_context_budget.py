@@ -17,9 +17,13 @@ def test_context_scenarios_reference_existing_files() -> None:
     assert report
     for scenario in report.values():
         assert scenario["files"]
+        assert scenario["always"]
+        assert set(scenario["files"]) == set(scenario["always"] + scenario["conditional"])
         assert scenario["bytes"] > 0
         assert scenario["lines"] > 0
         assert scenario["words"] > 0
+        assert scenario["bytes"] <= scenario["max_bytes"]
+        assert scenario["within_budget"] is True
 
 
 def test_direct_scenarios_exclude_standard_and_modifiers() -> None:
@@ -37,6 +41,17 @@ def test_normal_standard_excludes_modifiers() -> None:
         files = "\n".join(report[name]["files"])
         assert "long-running.md" not in files
         assert "high-risk.md" not in files
+
+
+def test_each_standard_modifier_has_a_budgeted_scenario_per_runtime() -> None:
+    report = MODULE.build_report(ROOT)
+    for name in (
+        "codex-standard-long-running",
+        "codex-standard-high-risk",
+        "opencode-standard-long-running",
+        "opencode-standard-high-risk",
+    ):
+        assert name in report
 
 
 def test_bootstrap_agents_file_stays_compact() -> None:

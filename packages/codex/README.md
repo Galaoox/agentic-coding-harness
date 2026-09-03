@@ -1,55 +1,60 @@
 # Codex package
 
-This package contains the Codex-specific `codex-orchestrator` skill. It is not an OpenCode adapter and it does not install or configure Codex itself.
+This package contains `codex-orchestrator` v1.3. It does not install or configure Codex.
 
 ## Contents
 
 ```text
 skills/codex-orchestrator/
-  SKILL.md                                Activation and operational summary
-  agents/openai.yaml                      Codex UI metadata
-  references/orchestration-contract.md    Normative routing and evidence contract
+├── SKILL.md                 Explicit activation and conditional loader
+├── agents/openai.yaml       Codex UI metadata
+└── references/
+    ├── index.md             Route gates and reference map
+    ├── direct.md            Direct-only mechanics
+    ├── standard.md          Standard roles and ownership
+    ├── evidence.md          Evidence gates and terminal states
+    ├── model-routing.md     Sol/Terra/Luna and effort policy
+    ├── model-routing.yaml   Machine-readable effort ceiling and default roles
+    ├── long-running.md      Conditional continuity modifier
+    └── high-risk.md         Conditional safety modifier
 ```
+
+The skill loads only the selected route, applicable modifiers/model policy, and the evidence phase. Sol uses `medium` by default and `high` as the hard ceiling.
 
 ## Requirements
 
-- A Codex installation that supports local skills and subagents.
-- A Git repository for the task being orchestrated.
-- Permission to run the repository's required deterministic checks.
+- Codex with local skills and subagents.
+- Git for the target project.
+- Permission to run required deterministic checks.
+- Actual availability of any selected model; missing required capability yields `BLOCKED`.
 
-The skill's rules guide an agent; they are not a sandbox. Use Codex sandboxing, a worktree, or a container when filesystem/process isolation matters.
+Prompt rules are not a sandbox. Use Codex sandboxing, a worktree, or a container when filesystem/process isolation matters.
 
-## Install for a local Codex profile
-
-Copy the skill directory into the skill location configured by your Codex installation. The commonly used layout is:
+## Install
 
 ```bash
 mkdir -p "$CODEX_HOME/skills"
 cp -R packages/codex/skills/codex-orchestrator "$CODEX_HOME/skills/"
 ```
 
-If `CODEX_HOME` is unset, consult the installed Codex documentation or run the smoke setup with an explicit temporary `CODEX_HOME`; do not assume a user-specific home path in repository files.
-
-Restart or open a new Codex session after installation so it discovers the skill. Invoke it explicitly:
+If `CODEX_HOME` is unset, inspect the installed Codex documentation or use an explicit temporary profile. Restart/open a new session and invoke explicitly:
 
 ```text
 $codex-orchestrator
 ```
 
-It intentionally does not activate implicitly.
-
 ## Upgrade and uninstall
 
-To upgrade, replace the installed `codex-orchestrator` directory with the desired repository version and restart the Codex session. To uninstall, remove that installed directory. No installer or automatic migration exists in v1.2.
+Replace or remove the installed `codex-orchestrator` directory. v1.3 replaces the old monolithic `references/orchestration-contract.md` with modular references; replace the complete directory rather than overlaying files so the obsolete file is not retained.
 
-## Validate before installation
-
-From the repository root:
+## Validate
 
 ```bash
 uv sync --frozen
 uv run pytest -q
 uv run python scripts/validate_codex_package.py
+uv run python scripts/validate_knowledge_base.py
+uv run python scripts/report_context_budget.py
 ```
 
-For behavioral validation, run the cases in `../../docs/evaluation/v1.2-smoke-cases.md` against a temporary Codex profile and record only real results in the matching smoke-results file.
+Behavioral cases remain in [`../../docs/evaluation/v1.2-smoke-cases.md`](../../docs/evaluation/v1.2-smoke-cases.md) until a new runtime-backed result set supersedes them.
