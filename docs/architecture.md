@@ -7,14 +7,18 @@ The monorepo separates runtime-neutral workflow principles from runtime integrat
 ```text
 packages/
   core/
+    contracts/
     principles/
   codex/
     skills/
+  opencode/
+    overlay/.opencode/
+    install/
 ```
 
-## Current boundary
+## Runtime boundaries
 
-Codex is the only supported runtime. The repository may add adapters for OpenCode or other systems later, but v1.2 does not define an adapter interface or depend on unimplemented runtimes.
+Codex v1.2 and OpenCode v0.1 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` contains only shared invariants: Direct/Standard routing, modifiers, evidence authority, one writer, one correction and terminal states. Runtime packages own their activation, agent/tool configuration, permissions, lifecycle semantics and installation.
 
 ## Codex v1.2 design
 
@@ -35,6 +39,14 @@ Standard
 `Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. `long-running` and `high-risk` modify Standard safeguards without creating separate role graphs or state machines.
 
 The authoritative implementation details remain in `packages/codex/skills/codex-orchestrator/references/orchestration-contract.md`; this document intentionally does not duplicate every gate.
+
+## OpenCode v0.1 design
+
+`packages/opencode/overlay/.opencode` provides `/orchestrate`, a primary `harness-orchestrator`, and hidden `harness-explorer`, `harness-implementer`, and `harness-verifier` subagents. The overlay is installed per project; it does not mutate global config or select a provider/model.
+
+OpenCode permissions are static defense-in-depth, not sandboxing. In particular, a Standard Root's non-writing role is contractual, and any agent granted shell could write unless shell is also constrained. Explorer denies shell entirely; Verifier accepts only an approval-gated shell allowlist. The runner uses JSONL only as audit telemetry and gives authority to external deterministic evidence.
+
+The adapter was capability-tested on OpenCode 1.18.27. The exact observed behavior and unsupported assumptions are in `docs/research/opencode-capability-matrix.md`.
 
 ## Evidence authority
 

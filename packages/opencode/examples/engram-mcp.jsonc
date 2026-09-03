@@ -1,0 +1,10 @@
+// Optional example only. The adapter has no MCP dependency.
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "engram": {
+      "type": "remote",
+      "url": "https://example.invalid/engram"
+    }
+  }
+}

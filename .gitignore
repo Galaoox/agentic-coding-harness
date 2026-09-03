@@ -4,6 +4,10 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 
+# OpenCode smoke traces
+.opencode-smoke/
+*.jsonl
+
 # Editor and operating-system metadata
 .vscode/
 .idea/

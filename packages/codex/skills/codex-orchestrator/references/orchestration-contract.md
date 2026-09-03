@@ -4,6 +4,8 @@
 
 This is the normative contract for `codex-orchestrator` v1.2. It replaces the fixed v1.1 `Explorer → Implementer → Verifier` topology with a bounded routing model. It does not add a runtime-neutral adapter, parallel writers, or an autonomous retry loop.
 
+Shared routing/evidence invariants are mirrored in `packages/core/contracts/evidence-driven-orchestration.md`. Codex-specific mechanics remain normative in this contract.
+
 Authority is ordered as follows:
 
 1. Current request and acceptance criteria.

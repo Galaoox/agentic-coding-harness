@@ -1,8 +1,11 @@
 # Agentic Coding Harness
 
-A Codex-first monorepo for bounded, evidence-driven software-development workflows.
+A multi-runtime monorepo for bounded, evidence-driven software-development workflows.
 
-Codex is the only supported runtime in the current milestone. OpenCode and other runtimes are future work and are not implemented here.
+Supported adapters:
+
+- Codex v1.2 — explicitly invoked skill package.
+- OpenCode v0.1 — project-scoped command/agent overlay, validated against OpenCode 1.18.27.
 
 ## v1.2 workflow
 
@@ -48,6 +51,9 @@ packages/
   codex/
     README.md                   Codex installation and package boundaries
     skills/codex-orchestrator/  Explicitly invoked orchestration skill
+  opencode/
+    overlay/.opencode/          Project-scoped command, agents and contract
+    install/                    Conflict-safe installer and verifier
 docs/
   architecture.md               Boundaries and extension strategy
   baselines/                    Versioned workflow comparisons
@@ -61,10 +67,11 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/):
 ```bash
 uv sync --frozen
 uv run pytest -q
+uv run python scripts/validate_harness_packages.py
 uv run python scripts/validate_codex_package.py
 ```
 
-The static validator checks package structure and consistency. It does not prove LLM behavior; see `docs/evaluation/v1.2-smoke-cases.md` for real Codex scenarios.
+The static validators check package structure and consistency. They do not prove model behavior; see `docs/evaluation/v1.2-smoke-cases.md` and `docs/evaluation/opencode-v0.1-smoke-cases.md` for real-runtime scenarios and recorded status.
 
 ## Status
 
