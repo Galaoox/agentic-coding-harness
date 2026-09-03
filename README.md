@@ -1,33 +1,81 @@
 # Agentic Coding Harness
 
-A Codex-first monorepo for adaptive, evidence-driven software-development workflows.
+A multi-runtime monorepo for bounded, evidence-driven software-development workflows.
 
-The project starts with Codex. Support for other runtimes, such as OpenCode, is a future extension and is not part of the current implementation.
+Supported adapters:
+
+- Codex v1.2 — explicitly invoked skill package.
+- OpenCode v0.1 — project-scoped command/agent overlay, validated against OpenCode 1.18.27.
+
+## v1.2 workflow
+
+`codex-orchestrator` has two routes:
+
+| Route | Use when | Flow |
+|---|---|---|
+| `Direct` | The outcome, edit location, risk and deterministic evidence are all clear | Root implements → checks → terminal state |
+| `Standard` | Any Direct gate is uncertain or false | Explore only if needed → one Implementer → checks → gated fresh review → terminal state |
+
+Two modifiers apply only to Standard:
+
+- `long-running`: independently verified units, checkpoints, and concise handoffs.
+- `high-risk`: baseline, rollback, relevant negative checks, fresh review, and human approval before irreversible/external effects.
+
+The workflow remains serial in v1.2. It does not fan out writers or reviewers.
 
 ## Principles
 
-- Route work by uncertainty, risk, coupling, and verifiability.
-- Keep one implementation owner for coupled changes.
+- Route work by uncertainty, risk, coupling, and verifiability—not file count.
+- Keep one implementation owner for coupled Standard changes.
 - Prefer executable evidence over agent narration.
-- Use fresh review only for residual risks.
+- Run review only for explicit residual-risk gates; reviewer output is findings, not terminal authority.
 - Use Engram to recover the past, never to decide the present.
 - Keep required rules and authoritative decisions in versioned repository files.
+
+## Terminal states
+
+| State | Meaning |
+|---|---|
+| `VERIFIED` | Every required criterion has valid evidence and no gate failed. |
+| `VERIFIED_WITH_RISKS` | Criteria have valid evidence; residual risks are documented and non-blocking. |
+| `FAILED` | A criterion, required check, policy/scope gate, or reproducible blocking finding failed. |
+| `BLOCKED` | Required context, permission, tool, environment, or approval is unavailable. |
+
+A textual reviewer `PASS` cannot override failed checks, missing evidence, or a blocked approval.
 
 ## Repository layout
 
 ```text
 packages/
-  core/                         Shared contracts and runtime-neutral principles
+  core/                         Shared principles, including memory authority
   codex/
-    skills/
-      codex-orchestrator/       Initial Codex workflow
+    README.md                   Codex installation and package boundaries
+    skills/codex-orchestrator/  Explicitly invoked orchestration skill
+  opencode/
+    overlay/.opencode/          Project-scoped command, agents and contract
+    install/                    Conflict-safe installer and verifier
 docs/
-  architecture.md              Boundaries and extension strategy
+  architecture.md               Boundaries and extension strategy
+  baselines/                    Versioned workflow comparisons
+  evaluation/                   Smoke-case specs and real execution records
 ```
+
+## Validation
+
+Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv sync --frozen
+uv run pytest -q
+uv run python scripts/validate_harness_packages.py
+uv run python scripts/validate_codex_package.py
+```
+
+The static validators check package structure and consistency. They do not prove model behavior; see `docs/evaluation/v1.2-smoke-cases.md` and `docs/evaluation/opencode-v0.1-smoke-cases.md` for real-runtime scenarios and recorded status.
 
 ## Status
 
-Experimental. The first milestone is to replace the fixed explorer–implementer–verifier topology with proportional execution routes for Codex.
+Experimental. v1.2 is a scoped evolution of the v1.1 baseline, not a complete agent framework.
 
 ## License
 

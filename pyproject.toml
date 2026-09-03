@@ -1,0 +1,15 @@
+[project]
+name = "agentic-coding-harness"
+version = "0.0.0"
+description = "Development checks for the Codex orchestration package"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "PyYAML>=6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

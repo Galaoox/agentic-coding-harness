@@ -1,7 +1,7 @@
 interface:
   display_name: "Codex Orchestrator"
-  short_description: "Coordinate implementation with fresh verification"
-  default_prompt: "Use $codex-orchestrator to implement this change with proportional exploration and fresh verification."
+  short_description: "Route Codex work with evidence-driven gates"
+  default_prompt: "Use $codex-orchestrator to classify this task as Direct or Standard, apply only needed modifiers, and report evidence-based terminal status."
 
 policy:
   allow_implicit_invocation: false
