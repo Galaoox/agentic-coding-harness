@@ -34,6 +34,8 @@ Before editing or delegation, Root records a concise Task Brief:
 
 Ask one consolidated question only when missing information materially changes scope, implementation, validation, safety, or an irreversible effect. Otherwise state the assumption and proceed.
 
+When retrieved memory materially influences the Task Brief, record the memory identifier or source and the current higher-authority evidence that confirms or refutes it. Memory may not change the selected route, acceptance criteria, or terminal state without that recorded evidence.
+
 ## Routes
 
 ### Direct
