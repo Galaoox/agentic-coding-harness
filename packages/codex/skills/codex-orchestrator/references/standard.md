@@ -1,18 +1,13 @@
 # Standard route
 
-Use Standard whenever a Direct gate is false or uncertain.
+DEFINE -> EXPLORE? -> IMPLEMENT -> CHECKS -> REVIEW? -> TERMINAL
 
-```text
-DEFINE → EXPLORE? → IMPLEMENT → SCOPE_AND_DETERMINISTIC_CHECKS → REVIEW? → TERMINAL
-```
+Root owns acceptance/plan, not implementation. One Implementer writes coupled source/config/tests and cannot delegate. Read-only Explorer resolves uncertainty. Fresh read-only Verifier is required for high-risk, material API/architecture risk, insufficient coverage or concrete residual risk.
 
-## Roles
+Run serially. Handoffs prohibit delegation and include question, facts, sources, tools, bounds, evidence and stop condition. Bind plan revision/unit; stale binding blocks affected work. Corrections retain writer and causal budgets.
 
-- **Root:** owns acceptance, routing, state, and synthesis; does not edit implementation files.
-- **Explorer:** optional, read-only, and used only for uncertainty about location, behavior, dependencies, or risk. Returns evidence, paths/symbols, risks, and a non-binding recommendation.
-- **Implementer:** one Implementer is the persistent writer for all coupled source, configuration, and test changes. It cannot delegate. It returns changed files, implementation summary, criterion evidence, commands/results, and limitations.
-- **Verifier:** fresh and read-only; required only for `high-risk`, unresolved material public API/architecture risk, insufficient deterministic coverage, or a concrete residual risk. Findings need reproducible evidence.
+One exceptional independent premise check per change may use a fresh read-only Explorer independent of the author for consequential unproven premises unresolved by evidence. No debate, chains or new budget. Unresolved premises block dependent actions; required high-risk review remains.
 
-Run serially. Never fan out overlapping writers. Every delegated prompt prohibits further delegation. A correction retains the same Implementer and is limited to one blocking reproducible finding set.
+Load [evidence.md](evidence.md) before bug edits and acceptance.
 
-Load [`model-routing.md`](model-routing.md) when assigning roles. Load modifier references only when their gates apply, then load [`evidence.md`](evidence.md) before acceptance.
+Load [model-routing.md](model-routing.md) when assigning roles.

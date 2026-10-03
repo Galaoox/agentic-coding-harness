@@ -101,6 +101,15 @@ def validate_opencode_package(root: Path) -> list[str]:
     explorer = parsed.get("harness-explorer", {}).get("permission", {})
     if action(explorer, "bash") != "deny":
         errors.append("harness-explorer must deny bash")
+    verifier_shell = action(parsed.get("harness-verifier", {}).get("permission", {}), "bash")
+    expected_shell = {
+        "*": "ask",
+        "git diff --check": "allow",
+        "git status --short --branch": "allow",
+        "uv run pytest *": "allow",
+    }
+    if verifier_shell != expected_shell:
+        errors.append("harness-verifier bash must match the approval-gated shell allowlist")
     implementer = parsed.get(WRITER, {})
     if implementer.get("mode") != "subagent" or action(implementer.get("permission", {}), "edit") != "allow" or action(implementer.get("permission", {}), "task") != "deny":
         errors.append("harness-implementer must be the only writer subagent with task denied")

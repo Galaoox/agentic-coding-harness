@@ -3,10 +3,23 @@ supported_runtimes:
   - codex
   - opencode
 runtime_versions:
-  codex: 1.3.0
-  opencode: 0.2.0
+  codex: 1.4.0
+  opencode: 0.3.0
+
+# Specified in both installed adapters; model-backed conformance remains separate.
+adapter_conformance:
+  causal-corrections: {codex: specified, opencode: specified, behavioral_evidence: pending}
+  direct-reclassification: {codex: specified, opencode: specified, behavioral_evidence: pending}
+  continuity: {codex: specified, opencode: specified, behavioral_evidence: pending}
+  planning-handoffs: {codex: specified, opencode: specified, behavioral_evidence: pending}
+  reproduction-verification: {codex: specified, opencode: specified, behavioral_evidence: pending}
+  premise-browser: {codex: specified, opencode: specified, behavioral_evidence: pending}
 
 documents:
+  - {path: docs/evaluation/harness-evolution-results.md, authority: evidence, status: current, scope: repository}
+  - {path: docs/research/lightweight-harness-decisions.md, authority: reference, status: current, scope: repository}
+  - {path: docs/evaluation/harness-smoke-guide.md, authority: reference, status: current, scope: repository}
+  - {path: docs/plans/active/harness-evolution.md, authority: reference, status: current, scope: repository}
   - {path: docs/index.md, authority: normative, status: current, scope: repository}
   - {path: docs/architecture.md, authority: normative, status: current, scope: repository}
   - {path: docs/contracts/index.md, authority: normative, status: current, scope: contracts}
@@ -16,7 +29,7 @@ documents:
   - {path: packages/core/principles/memory-authority.md, authority: normative, status: current, scope: core}
   - {path: docs/decisions/0001-opencode-command-and-agent-overlay.md, authority: historical, status: completed, scope: opencode}
   - {path: docs/decisions/0002-progressive-context-knowledge-base.md, authority: normative, status: current, scope: repository}
-  - {path: docs/evaluation/progressive-context-results.md, authority: evidence, status: current, scope: repository}
+  - {path: docs/evaluation/progressive-context-results.md, authority: evidence, status: completed, scope: repository}
   - {path: docs/evaluation/v1.2-smoke-cases.md, authority: reference, status: current, scope: codex}
   - {path: docs/evaluation/v1.2-smoke-results.md, authority: evidence, status: completed, scope: codex}
   - {path: docs/evaluation/opencode-v0.1-smoke-cases.md, authority: reference, status: current, scope: opencode}
@@ -24,7 +37,8 @@ documents:
   - {path: docs/research/opencode-capability-matrix.md, authority: evidence, status: completed, scope: opencode}
   - {path: docs/baselines/codex-orchestrator-v1.1.md, authority: historical, status: superseded, scope: codex}
 
-# These scenarios measure unchanged shipped adapters, not full shared-target conformance.
+# Budgets measure LF-normalized declared package context, not global rules or tokens.
+# OpenCode limits include reproduction, causal budgets and planning added in v0.3.
 context_scenarios:
   repository-bootstrap:
     max_bytes: 1600
@@ -68,7 +82,7 @@ context_scenarios:
       - packages/codex/skills/codex-orchestrator/references/evidence.md
       - packages/codex/skills/codex-orchestrator/references/high-risk.md
   opencode-direct:
-    max_bytes: 5000
+    max_bytes: 5500
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md
@@ -76,7 +90,7 @@ context_scenarios:
       - packages/opencode/overlay/.opencode/references/direct.md
       - packages/opencode/overlay/.opencode/references/evidence.md
   opencode-standard:
-    max_bytes: 5100
+    max_bytes: 6000
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md
@@ -84,7 +98,7 @@ context_scenarios:
       - packages/opencode/overlay/.opencode/references/standard.md
       - packages/opencode/overlay/.opencode/references/evidence.md
   opencode-standard-long-running:
-    max_bytes: 5700
+    max_bytes: 7000
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md
@@ -93,7 +107,7 @@ context_scenarios:
       - packages/opencode/overlay/.opencode/references/evidence.md
       - packages/opencode/overlay/.opencode/references/long-running.md
   opencode-standard-high-risk:
-    max_bytes: 5700
+    max_bytes: 6800
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md
@@ -101,3 +115,21 @@ context_scenarios:
       - packages/opencode/overlay/.opencode/references/standard.md
       - packages/opencode/overlay/.opencode/references/evidence.md
       - packages/opencode/overlay/.opencode/references/high-risk.md
+  codex-direct-long-running:
+    max_bytes: 7500
+    always:
+      - packages/codex/skills/codex-orchestrator/SKILL.md
+      - packages/codex/skills/codex-orchestrator/references/index.md
+    conditional:
+      - packages/codex/skills/codex-orchestrator/references/direct.md
+      - packages/codex/skills/codex-orchestrator/references/evidence.md
+      - packages/codex/skills/codex-orchestrator/references/long-running.md
+  opencode-direct-long-running:
+    max_bytes: 6500
+    always:
+      - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
+      - packages/opencode/overlay/.opencode/references/index.md
+    conditional:
+      - packages/opencode/overlay/.opencode/references/direct.md
+      - packages/opencode/overlay/.opencode/references/evidence.md
+      - packages/opencode/overlay/.opencode/references/long-running.md

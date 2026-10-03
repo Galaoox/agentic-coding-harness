@@ -1,14 +1,11 @@
 # Standard route
 
-```text
-DEFINE → EXPLORE? → IMPLEMENT → SCOPE_AND_DETERMINISTIC_CHECKS → REVIEW? → TERMINAL
-```
+DEFINE -> EXPLORE? -> IMPLEMENT -> CHECKS -> REVIEW? -> TERMINAL
 
-- Root does not edit implementation files.
-- `harness-explorer` is optional, read-only, and used only when location, behavior, dependencies, or risk are uncertain.
-- `harness-implementer` is the single writer for coupled source, configuration, and tests. It cannot delegate.
-- `harness-verifier` is fresh and read-only. Use it only for high-risk, unresolved material API/architecture risk, insufficient deterministic coverage, or a concrete residual risk.
+Root owns acceptance/plan, not implementation. One Implementer writes coupled source/config/tests and cannot delegate. Read-only Explorer resolves uncertainty. Fresh read-only Verifier is required for high-risk, material API/architecture risk, insufficient coverage or concrete residual risk.
 
-Run roles serially. No writer fan-out. Every delegated task prohibits further delegation. One correction may return to the same Implementer for blocking reproducible findings.
+Run serially. Handoffs prohibit delegation and include question, facts, sources, tools, bounds, evidence and stop condition. Bind plan revision/unit; stale binding blocks affected work. Corrections retain writer and causal budgets.
 
-Load modifier references only when gated, then [`evidence.md`](evidence.md) before acceptance.
+One exceptional independent premise check per change may use a fresh read-only Explorer independent of the author for consequential unproven premises unresolved by evidence. No debate, chains or new budget. Unresolved premises block dependent actions; required high-risk review remains.
+
+Load [evidence.md](evidence.md) before bug edits and acceptance.

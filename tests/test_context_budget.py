@@ -57,3 +57,28 @@ def test_each_standard_modifier_has_a_budgeted_scenario_per_runtime() -> None:
 def test_bootstrap_agents_file_stays_compact() -> None:
     report = MODULE.build_report(ROOT)
     assert report["repository-bootstrap"]["lines"] < 100
+
+
+def test_lf_budget_is_independent_of_checkout_newlines(tmp_path):
+    lf, crlf = tmp_path / "lf.md", tmp_path / "crlf.md"
+    lf.write_bytes(b"one\ntwo\n")
+    crlf.write_bytes(b"one\r\ntwo\r\n")
+    assert MODULE.measure_files([lf])["bytes"] == MODULE.measure_files([crlf])["bytes"]
+    assert MODULE.measure_files([lf])["raw_bytes"] != MODULE.measure_files([crlf])["raw_bytes"]
+
+
+def test_observed_roles_are_not_merged(tmp_path):
+    import json
+    (tmp_path / "rules.md").write_text("rules", encoding="utf-8")
+    path = tmp_path / "layers.json"
+    path.write_text(json.dumps([{"role": role, "layer": "global", "files": ["rules.md"]} for role in ("root", "verifier")]), encoding="utf-8")
+    observations = MODULE.measure_layers(path)
+    assert len(observations) == 2
+    assert [entry["role"] for entry in observations] == ["root", "verifier"]
+
+
+def test_direct_continuity_has_no_standard_reference():
+    for runtime in ("codex", "opencode"):
+        scenario = MODULE.build_report(ROOT)[runtime + "-direct-long-running"]
+        assert any(path.endswith("long-running.md") for path in scenario["files"])
+        assert not any(path.endswith("standard.md") for path in scenario["files"])

@@ -10,7 +10,10 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -34,6 +37,9 @@ jobs:
           scripts/validate_codex_package.py
           scripts/report_context_budget.py
           scripts/run_opencode_smoke.py
+          scripts/run_codex_smoke.py
+          scripts/smoke_evidence.py
+          scripts/prepare_smoke_fixture.py
           packages/opencode/install/install.py
           packages/opencode/install/verify_install.py
       - name: Check committed diff hygiene

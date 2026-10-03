@@ -19,10 +19,12 @@ URI_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 REQUIRED_SCENARIOS = {
     "repository-bootstrap",
     "codex-direct",
+    "codex-direct-long-running",
     "codex-standard",
     "codex-standard-long-running",
     "codex-standard-high-risk",
     "opencode-direct",
+    "opencode-direct-long-running",
     "opencode-standard",
     "opencode-standard-long-running",
     "opencode-standard-high-risk",
@@ -112,6 +114,15 @@ def validate_knowledge_base(root: Path) -> list[str]:
         if runtime_versions.get(runtime) != actual:
             errors.append(f"runtime version drift for {runtime}: catalog={runtime_versions.get(runtime)!r}, package={actual!r}")
 
+    capabilities = data.get("adapter_conformance", {})
+    expected_capabilities = {"causal-corrections", "direct-reclassification", "continuity", "planning-handoffs", "reproduction-verification", "premise-browser"}
+    if not isinstance(capabilities, dict) or set(capabilities) != expected_capabilities:
+        errors.append("adapter_conformance must declare the six shared capabilities")
+    else:
+        for name, spec in capabilities.items():
+            if not isinstance(spec, dict) or any(spec.get(runtime) != "specified" for runtime in RUNTIMES) or spec.get("behavioral_evidence") != "pending":
+                errors.append(f"invalid or unsupported conformance claim: {name}")
+
     documents = data.get("documents")
     if not isinstance(documents, list):
         errors.append("documents must be a list")
@@ -149,11 +160,11 @@ def validate_knowledge_base(root: Path) -> list[str]:
         "packages/core/principles/memory-authority.md",
     }
     for directory in (root / "docs/contracts", root / "docs/runtimes"):
-        required_normative.update(str(path.relative_to(root)) for path in directory.glob("*.md"))
+        required_normative.update(path.relative_to(root).as_posix() for path in directory.glob("*.md"))
     missing = sorted(required_normative - seen)
     for relative in missing:
         errors.append(f"normative document is not catalogued: {relative}")
-    knowledge_documents = {str(path.relative_to(root)) for path in (root / "docs").rglob("*.md")}
+    knowledge_documents = {path.relative_to(root).as_posix() for path in (root / "docs").rglob("*.md")}
     for relative in sorted(knowledge_documents - seen):
         errors.append(f"knowledge document is not catalogued: {relative}")
 
@@ -201,7 +212,7 @@ def validate_knowledge_base(root: Path) -> list[str]:
             else:
                 existing_context_files.append(context_path)
         if isinstance(max_bytes, int) and not isinstance(max_bytes, bool) and max_bytes > 0:
-            byte_count = sum(path.stat().st_size for path in existing_context_files)
+            byte_count = sum(len(path.read_text(encoding="utf-8").encode("utf-8")) for path in existing_context_files)
             if byte_count > max_bytes:
                 errors.append(f"context scenario {name} exceeds max_bytes: {byte_count} > {max_bytes}")
         joined = "\n".join(str(value) for value in files)

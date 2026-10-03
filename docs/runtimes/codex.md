@@ -16,6 +16,8 @@ Sol is `medium` by default and `high` is the hard ceiling. Terra handles everyda
 
 ## Evidence
 
+- [Current bounded smoke guide](../evaluation/harness-smoke-guide.md)
+
 - [Codex v1.2 smoke cases](../evaluation/v1.2-smoke-cases.md)
 - [Codex v1.2 smoke results](../evaluation/v1.2-smoke-results.md)
 

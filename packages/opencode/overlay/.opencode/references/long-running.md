@@ -1,7 +1,7 @@
 # Long-running modifier
 
-Apply only to Standard when work contains several independently verifiable units or must cross a session boundary.
+Cross-session continuity applies to either route, never by file/unit count alone. Use one brief/plan in the project's convention; disclose inline-only persistence when unavailable.
 
-For each unit, record criteria, run deterministic checks, create a Git checkpoint when possible, and hand off base/candidate SHA, completed evidence, unresolved risks, and exactly one next unit. Create concise versioned progress only when a later session needs it.
+Record criteria, dependencies, readiness, authorization, actual evidence, unresolved defects and one next unit. Bind handoff to plan revision/unit/candidate. On resume reconcile code and user changes before relying on old evidence. Never restore old bytes, weaken criteria or reset budgets silently.
 
-Do not add roles, auto-reset context, or carry full transcripts merely because work is long-running.
+Git checkpoints require explicit authorization. Root maintains the plan even on Standard; this grants no implementation ownership. No extra roles, automatic context resets or full transcripts.

@@ -1,0 +1,15 @@
+{
+  "id": "resume-user-change",
+  "message": "{invocation} Resume a Direct long-running unit to correct calculator.add and verify python check_outcome.py resume. Current user-note.txt supersedes the old plan baseline; preserve its bytes. Edit only calculator.py; no Git checkpoint is authorized.",
+  "allowed_changes": [
+    "calculator.py"
+  ],
+  "checks": [
+    [
+      "python",
+      "check_outcome.py",
+      "resume"
+    ]
+  ],
+  "expected_terminal": "VERIFIED"
+}

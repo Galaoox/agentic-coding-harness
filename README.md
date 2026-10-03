@@ -5,8 +5,8 @@ A multi-runtime monorepo for bounded, evidence-driven software-development workf
 
 Supported adapters:
 
-- Codex v1.3 — explicitly invoked skill; Sol `medium` by default and `high` as the hard ceiling.
-- OpenCode v0.2 — project-scoped command/agent overlay, provider-neutral and validated against OpenCode 1.18.x.
+- Codex v1.4 — explicitly invoked skill; Sol `medium` by default and `high` as the hard ceiling.
+- OpenCode v0.3 — project-scoped command/agent overlay, provider-neutral, targeting OpenCode 1.18.x.
 
 ## Knowledge and context
 
@@ -23,7 +23,7 @@ Exactly two routes are supported:
 
 The [canonical shared contract](packages/core/contracts/evidence-driven-orchestration.md) keeps one writer and permits three corrections per independent root defect, excluding detection. Budgets survive route, actor, session, and name changes; an unresolved required defect after the third correction stops dependent work and prevents verified delivery. A bounded error alone does not escalate Direct when its gates still hold.
 
-In that target, `long-running` supports cross-session continuity on either route and checkpoints require authorization; `high-risk` excludes Direct. The shipped adapters still use one total correction and Standard-only modifiers. This contract-only update does not change their implementation or invocation: see [adapter conformance gaps](docs/contracts/index.md#adapter-conformance-gaps).
+Both adapters specify cross-session continuity on either route, authorized checkpoints and three corrections per independent root defect. High-risk excludes Direct. Static conformance and runtime evidence remain distinct: see the [conformance matrix](docs/contracts/index.md#adapter-conformance).
 
 ## Model policy for Codex
 
@@ -71,12 +71,17 @@ uv run python -m py_compile \
   scripts/validate_codex_package.py \
   scripts/report_context_budget.py \
   scripts/run_opencode_smoke.py \
+  scripts/run_codex_smoke.py \
+  scripts/smoke_evidence.py \
+  scripts/prepare_smoke_fixture.py \
   packages/opencode/install/install.py \
   packages/opencode/install/verify_install.py
 git diff --check
 ```
 
 Static validation proves structure and declared invariants, not model behavior. Runtime evidence and limitations live under [`docs/evaluation/`](docs/evaluation/).
+
+Run [bounded model smokes](docs/evaluation/harness-smoke-guide.md) manually or before a behavior release. Each run uses external case checks; ordinary PR validation uses deterministic tests on Windows and Linux. Context reporting separates LF-normalized package budgets, observed role/layer inputs and runtime tokens. Global memory/search/review tools are optional integrations, not package dependencies.
 
 ## Status
 

@@ -1,0 +1,17 @@
+{
+  "revision": 7,
+  "candidate": "reconcile current fixture before relying on readiness",
+  "authorization": "no further correction to required defect D1",
+  "next_unit": "stop dependent implementation",
+  "defects": {
+    "D1": {
+      "hypothesis": "addition subtracts rather than adds",
+      "criteria": [
+        "ADD"
+      ],
+      "attempts": 3,
+      "resolved": false,
+      "required": true
+    }
+  }
+}

@@ -20,12 +20,25 @@ def load_catalog() -> dict:
     return yaml.safe_load(CATALOG.read_text(encoding="utf-8"))
 
 
+def test_validator_accepts_current_repository() -> None:
+    assert VALIDATOR.validate_knowledge_base(ROOT) == []
+
+
+def test_validator_rejects_unproved_conformance_claim(tmp_path):
+    root = copy_repository(tmp_path)
+    path = root / "docs/knowledge-base.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    data["adapter_conformance"]["continuity"]["behavioral_evidence"] = "verified"
+    path.write_text(yaml.safe_dump(data), encoding="utf-8")
+    assert any("unsupported conformance claim" in error for error in VALIDATOR.validate_knowledge_base(root))
+
+
 def test_repository_has_indexed_knowledge_base() -> None:
     assert (ROOT / "docs/index.md").is_file()
     data = load_catalog()
     assert data["schema_version"] == 1
     assert set(data["supported_runtimes"]) == {"codex", "opencode"}
-    assert data["runtime_versions"] == {"codex": "1.3.0", "opencode": "0.2.0"}
+    assert data["runtime_versions"] == {"codex": "1.4.0", "opencode": "0.3.0"}
 
 
 def test_catalogued_documents_are_unique_and_exist() -> None:
@@ -49,8 +62,8 @@ def test_compact_agents_file_maps_to_current_support() -> None:
 
 def test_current_architecture_uses_current_runtime_versions_and_references() -> None:
     content = (ROOT / "docs/architecture.md").read_text(encoding="utf-8")
-    assert "Codex v1.3" in content
-    assert "OpenCode v0.2" in content
+    assert "Codex v1.4" in content
+    assert "OpenCode v0.3" in content
     assert "references/orchestration-contract.md" not in content
 
 
@@ -168,7 +181,7 @@ def test_validator_rejects_runtime_version_drift(tmp_path: Path) -> None:
 def test_validator_reports_invalid_codex_version_metadata(tmp_path: Path) -> None:
     root = copy_repository(tmp_path)
     skill = root / "packages/codex/skills/codex-orchestrator/SKILL.md"
-    skill.write_text(skill.read_text(encoding="utf-8").replace('version: "1.3.0"', "version: ["), encoding="utf-8")
+    skill.write_text(skill.read_text(encoding="utf-8").replace('version: "1.4.0"', "version: ["), encoding="utf-8")
 
     errors = VALIDATOR.validate_knowledge_base(root)
 

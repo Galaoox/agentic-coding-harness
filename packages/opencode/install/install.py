@@ -84,7 +84,7 @@ def install(target: Path, dry_run: bool = False) -> list[Path]:
         source = OVERLAY_ROOT / destination.relative_to(target / ".opencode")
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
-    manifest_contents = {str(path.relative_to(target / ".opencode")): digest(path) for path in overlay_files() for path in [target / ".opencode" / relative_overlay_path(path)]}
+    manifest_contents = {relative_overlay_path(source).as_posix(): digest(overlay_target / relative_overlay_path(source)) for source in overlay_files()}
     manifest_file.write_text(json.dumps({"version": VERSION, "files": manifest_contents}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return planned
 
@@ -176,10 +176,15 @@ def verify_install(target: Path) -> list[str]:
                 if not isinstance(files, dict):
                     errors.append("install manifest files must be a mapping")
                 else:
+                    expected_files = {relative_overlay_path(source).as_posix(): digest(source) for source in overlay_files()}
+                    if set(files) != set(expected_files):
+                        errors.append("install manifest must cover exactly the managed overlay inventory")
                     for relative, expected_digest in files.items():
                         if not isinstance(relative, str) or not isinstance(expected_digest, str):
                             errors.append("install manifest entries must map string paths to string digests")
                             continue
+                        if relative in expected_files and expected_digest != expected_files[relative]:
+                            errors.append(f"manifest digest differs from package: {relative}")
                         candidate = overlay_root / relative
                         resolved = candidate.resolve()
                         try:

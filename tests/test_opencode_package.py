@@ -4,6 +4,9 @@ import importlib.util
 import shutil
 from pathlib import Path
 
+import pytest
+import yaml
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR_PATH = REPO_ROOT / "scripts/validate_harness_packages.py"
@@ -21,6 +24,17 @@ def copy_packages(tmp_path: Path) -> Path:
 
 def test_validates_repository_opencode_package() -> None:
     assert VALIDATOR.validate_opencode_package(REPO_ROOT) == []
+
+
+@pytest.mark.parametrize("shell", ["allow", {"*": "allow"}, {"*": "ask", "python *": "allow"}])
+def test_rejects_expanded_verifier_shell(tmp_path: Path, shell) -> None:
+    root = copy_packages(tmp_path)
+    path = root / "packages/opencode/overlay/.opencode/agents/harness-verifier.md"
+    _, metadata, body = path.read_text(encoding="utf-8").split("---", 2)
+    data = yaml.safe_load(metadata)
+    data["permission"]["bash"] = shell
+    path.write_text("---\n" + yaml.safe_dump(data) + "---" + body, encoding="utf-8")
+    assert any("shell allowlist" in error for error in VALIDATOR.validate_opencode_package(root))
 
 
 def test_rejects_command_with_missing_agent(tmp_path: Path) -> None:

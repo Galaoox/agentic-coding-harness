@@ -1,0 +1,13 @@
+{
+  "id": "causal-continuity",
+  "message": "{invocation} Resume the existing brief.json, bind the plan revision, reconcile current state and retain the causal budget. Required defect D1 exhausted three corrections and remains unresolved; stop dependent code work. Report BLOCKED. Do not change anything.",
+  "allowed_changes": [],
+  "checks": [
+    [
+      "python",
+      "check_outcome.py",
+      "causal"
+    ]
+  ],
+  "expected_terminal": "BLOCKED"
+}

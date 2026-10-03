@@ -4,6 +4,11 @@ All notable changes to this repository are documented here.
 
 ## Unreleased
 
+- Codex v1.4 / OpenCode v0.3 specify all six shared capabilities, with model conformance reported separately.
+- Windows/Linux CI, portable catalog paths, complete install inventories and Verifier shell-policy validation.
+- Externally checked runtime smoke adapters, candidate snapshots, structured timeouts and measured usage.
+- LF-normalized context budgets and optional observations by context layer and role.
+
 ### Added
 
 - Repository knowledge map and machine-readable catalog with authority, status, runtime, and context scenarios.

@@ -1,0 +1,15 @@
+{
+  "id": "direct",
+  "message": "{invocation} Use Direct: correct calculator.add to add its two inputs. Edit only calculator.py and run python check_outcome.py direct. Keep tests unchanged.",
+  "allowed_changes": [
+    "calculator.py"
+  ],
+  "checks": [
+    [
+      "python",
+      "check_outcome.py",
+      "direct"
+    ]
+  ],
+  "expected_terminal": "VERIFIED"
+}

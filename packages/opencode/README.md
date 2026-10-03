@@ -1,6 +1,6 @@
 # OpenCode adapter
 
-Version: `0.2.0`
+Version: `0.3.0`
 
 This package adapts the evidence-driven `Direct | Standard` harness to OpenCode `1.18.x` using a project-scoped overlay. It remains provider/model neutral and does not configure MCP servers, global settings, plugins, SDK orchestration, or merge behavior.
 
@@ -40,7 +40,8 @@ The Root starts at `.opencode/references/index.md`, loads only the selected rout
 - Explorer denies edit/bash/task. Verifier denies edit/task and has an approval-gated shell allowlist.
 - Permissions are defense-in-depth, not sandboxing; shell can write when enabled.
 - Candidate evidence, exit codes, diff, and approvals outrank narration.
-- JSONL is telemetry, not proof of correctness.
+- JSONL is telemetry, not proof of correctness; [bounded smoke cases](../../docs/evaluation/harness-smoke-guide.md) use external assertions and immutable verification.
+- v0.3 specifies three corrections per independent cause, Direct continuity, optional plans, reproduction and exceptional premise checks. Static declarations do not prove model compliance.
 - Engram is optional historical context; `examples/engram-mcp.jsonc` is a non-working placeholder shape.
 
 ## Upgrade and uninstall

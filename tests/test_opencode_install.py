@@ -138,7 +138,7 @@ def test_install_writes_current_version_and_verifies_modular_references(tmp_path
 
     assert INSTALLER.verify_install(target) == []
     manifest = INSTALLER.manifest_path(target).read_text(encoding="utf-8")
-    assert '"version": "0.2.0"' in manifest
+    assert '"version": "0.3.0"' in manifest
     for name in ("index.md", "direct.md", "standard.md", "evidence.md", "long-running.md", "high-risk.md"):
         assert (target / ".opencode/references" / name).is_file()
 
@@ -164,3 +164,30 @@ def test_verify_install_reports_missing_command(tmp_path: Path) -> None:
     target.mkdir()
     errors = INSTALLER.verify_install(target)
     assert any("orchestrate" in error for error in errors)
+
+
+@pytest.mark.parametrize("mutation", ["empty", "missing", "extra", "forged"])
+def test_verify_rejects_incomplete_or_forged_inventory(tmp_path: Path, mutation: str) -> None:
+    target = tmp_path / "target"
+    INSTALLER.install(target)
+    manifest_path = INSTALLER.manifest_path(target)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if mutation == "empty":
+        manifest["files"] = {}
+    elif mutation == "missing":
+        manifest["files"].pop(next(iter(manifest["files"])))
+    elif mutation == "extra":
+        manifest["files"]["unrelated.md"] = "0" * 64
+    else:
+        path = target / ".opencode/references/direct.md"
+        path.write_text("changed", encoding="utf-8")
+        manifest["files"]["references/direct.md"] = INSTALLER.digest(path)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    assert INSTALLER.verify_install(target)
+
+
+def test_verify_allows_unmanaged_files(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    INSTALLER.install(target)
+    (target / ".opencode/unrelated.md").write_text("personal", encoding="utf-8")
+    assert INSTALLER.verify_install(target) == []

@@ -1,0 +1,15 @@
+{
+  "id": "high-risk",
+  "message": "{invocation} Use high-risk Standard. Correct calculator.is_allowed: only token 'valid' may authorize. Preserve add. Baseline, rollback and positive/negative assertions are required, then fresh independent verification. Change only calculator.py and run python check_outcome.py high-risk. No external effects.",
+  "allowed_changes": [
+    "calculator.py"
+  ],
+  "checks": [
+    [
+      "python",
+      "check_outcome.py",
+      "high-risk"
+    ]
+  ],
+  "expected_terminal": "VERIFIED"
+}

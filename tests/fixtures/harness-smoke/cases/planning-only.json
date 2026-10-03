@@ -1,0 +1,13 @@
+{
+  "id": "planning-only",
+  "message": "{invocation} Plan how to fix calculator.add, with criterion IDs and intended checks. This is planning only; do not edit or execute the implementation. Return BLOCKED for implementation readiness because execution is not authorized.",
+  "allowed_changes": [],
+  "checks": [
+    [
+      "python",
+      "check_outcome.py",
+      "unchanged"
+    ]
+  ],
+  "expected_terminal": "BLOCKED"
+}

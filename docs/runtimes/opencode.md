@@ -12,6 +12,8 @@ The overlay is project-scoped and provider/model neutral. OpenCode permissions r
 
 ## Evidence
 
+- [Current bounded smoke guide](../evaluation/harness-smoke-guide.md)
+
 - [Capability matrix](../research/opencode-capability-matrix.md)
 - [Smoke cases](../evaluation/opencode-v0.1-smoke-cases.md)
 - [Smoke results](../evaluation/opencode-v0.1-smoke-results.md)

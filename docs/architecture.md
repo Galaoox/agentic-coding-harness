@@ -1,76 +1,43 @@
 # Architecture
 <!-- supported-runtimes: codex, opencode -->
 
-## Knowledge and context architecture
-
-`AGENTS.md` is the compact always-loaded map. [`docs/index.md`](index.md) catalogs the repository knowledge base, while [`docs/knowledge-base.yaml`](knowledge-base.yaml) supplies the machine-readable document and context-scenario inventory. Detailed route, modifier, runtime, decision, research, and evaluation material is loaded only when relevant and is checked for drift by deterministic validators.
-
-Repository docs describe the system; distributable runtime packages remain self-contained so installed consumers do not depend on repository-only paths.
-
-## Purpose
-
-The monorepo separates runtime-neutral workflow principles from runtime integrations.
-
-```text
-packages/
-  core/
-    contracts/
-    principles/
-  codex/
-    skills/
-  opencode/
-    overlay/.opencode/
-    install/
-```
+Codex v1.4 and OpenCode v0.3 are self-contained adapters for the
+[shared evidence-driven contract](../packages/core/contracts/evidence-driven-orchestration.md).
+`AGENTS.md` is the compact entry; [the index](index.md) and
+[catalog](knowledge-base.yaml) own knowledge authority and conditional context.
 
 ## Runtime boundaries
 
-Codex v1.3 and OpenCode v0.2 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` owns the canonical runtime-neutral target: routing, optional plans, continuity, reproduction, evidence integrity, one writer, three corrections per independent root defect, and terminal states. Runtime packages own activation, agents, tools, models, permissions, lifecycle, and installation.
+Core owns routing, planning, evidence, one writer, causal correction budgets and
+terminal states. Adapters own invocation, tools, models, permissions and
+installation. Both specify the six shared capability groups; the
+[conformance matrix](contracts/index.md#adapter-conformance) distinguishes
+specification from observed model behavior.
 
-The shared target and shipped adapters are not yet equivalent. This contract-only update leaves both distributables and their versions unchanged. The [contract catalog](contracts/index.md#adapter-conformance-gaps) records gaps rather than asserting runtime parity. Local OpenCode enhancements are reconciled into shared behavior, not copied as global configuration or personal permission policy.
+Direct: Root implements and verifies while every gate holds. A bounded error
+alone does not escalate. Standard: gated exploration, one persistent Implementer,
+deterministic checks and gated fresh review. Root maintains the plan on either
+route; high-risk excludes Direct; continuity may modify either route.
 
-## Codex v1.3 design
+Codex activates only through explicit skill invocation and retains Sol medium
+with high ceiling. OpenCode activates only through `/orchestrate` and remains
+provider-neutral. Its permissions are defense-in-depth: shell can write, and a
+Standard Root's non-writing role is contractual. Neither prompts nor static
+permission checks constitute a sandbox.
 
-`packages/codex/skills/codex-orchestrator` defines one Codex-specific, explicitly invoked orchestration contract:
+## Evidence and evaluation
 
-```text
-Direct
-  DEFINE → ROOT_IMPLEMENT → DETERMINISTIC_CHECKS → TERMINAL
+Current request and candidate-specific executable evidence outrank repository
+documentation, decisions, Git/issue history, retrieved memory and agent opinion.
+Outcome checks never derive success from a completed event or narrated state.
+The shared smoke evaluator records candidate hashes, per-command snapshots,
+results, runtime/version, scope changes and usage. Runtime adapters parse their
+own telemetry; unsupported metrics are unavailable rather than invented.
 
-Standard
-  DEFINE → EXPLORE? → IMPLEMENT → DETERMINISTIC_CHECKS → REVIEW? → TERMINAL
-                 + long-running?
-                 + high-risk?
-```
+PR CI runs deterministic tests and validators on Windows/Linux. Model-backed
+cases run manually or before behavior publication, in disposable fixtures with
+explicit time budgets. Historical results remain version-specific.
 
-`Direct` is permitted only when outcome, edit location, risk and deterministic evidence are clear. Root may write only on this route. Any uncertainty promotes work to `Standard`.
-
-In the shipped adapter, `Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. Its `long-running` and `high-risk` modify Standard safeguards, and post-edit Direct failures promote to Standard with one correction total. These are current mechanics, not claims of conformance to the updated shared correction and continuity contract.
-
-The distributable reference map starts at `packages/codex/skills/codex-orchestrator/references/index.md` and loads route, modifier, model, and evidence references conditionally. This document intentionally does not duplicate every gate.
-
-## OpenCode v0.2 design
-
-`packages/opencode/overlay/.opencode` provides `/orchestrate`, a primary `harness-orchestrator`, and hidden `harness-explorer`, `harness-implementer`, and `harness-verifier` subagents. The overlay is installed per project; it does not mutate global config or select a provider/model.
-
-OpenCode permissions are static defense-in-depth, not sandboxing. In particular, a Standard Root's non-writing role is contractual, and any agent granted shell could write unless shell is also constrained. Explorer denies shell entirely; Verifier accepts only an approval-gated shell allowlist. The runner uses JSONL only as audit telemetry and gives authority to external deterministic evidence.
-
-The adapter was capability-tested on OpenCode 1.18.27. The exact observed behavior and unsupported assumptions are in `docs/research/opencode-capability-matrix.md`. Like the shipped Codex adapter, it retains one correction total, post-edit Direct escalation, and Standard-only modifiers pending a separately scoped implementation of the shared target.
-
-## Evidence authority
-
-Current evidence has precedence over historical memory and agent opinion:
-
-1. Current user request and acceptance criteria.
-2. Current candidate code, configuration, and executable evidence.
-3. Versioned repository policies and documentation.
-4. Versioned decisions.
-5. Git history and issue context.
-6. Retrieved memory.
-7. Agent narration and opinion.
-
-Memory can locate relevant history. It cannot authorize a present decision without verification. Likewise, reviewer output supplies findings but cannot override failed deterministic checks, scope/policy violations, missing evidence, or a blocked required approval.
-
-## Extension strategy
-
-A future runtime integration should reuse only stable, evidence-oriented principles already demonstrated across `packages/core`. Runtime-specific prompts, tool semantics, metadata, lifecycle behavior, and installation remain in each runtime package; new shared abstractions require evidence from concrete adapters rather than one runtime's implementation.
+Package context budgets use normalized LF bytes; observed global layers and
+delegated roles are measured separately. Global memory, search and review tools
+remain optional. No runtime or new dependency is added by this evolution.

@@ -1,6 +1,6 @@
 # Codex package
 
-This package contains `codex-orchestrator` v1.3. It does not install or configure Codex.
+This package contains `codex-orchestrator` v1.4. It does not install or configure Codex.
 
 ## Contents
 
@@ -57,4 +57,4 @@ uv run python scripts/validate_knowledge_base.py
 uv run python scripts/report_context_budget.py
 ```
 
-Behavioral cases remain in [`../../docs/evaluation/v1.2-smoke-cases.md`](../../docs/evaluation/v1.2-smoke-cases.md) until a new runtime-backed result set supersedes them.
+Use the [bounded smoke guide](../../docs/evaluation/harness-smoke-guide.md) for current candidates. v1.2 results are historical. v1.4 specifies causal correction budgets, Direct continuity, optional planning, reproduction/evidence batches and exceptional premise checks; model behavior must be evaluated separately.

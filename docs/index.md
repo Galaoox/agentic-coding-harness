@@ -20,6 +20,10 @@ This directory is the repository knowledge base. `AGENTS.md` is the compact entr
 - [`evaluation/`](evaluation/) contains smoke cases and observed results; evidence is historical until reproduced against the current candidate.
 - [`research/`](research/) contains capability reconnaissance and external-runtime findings.
 - [`baselines/`](baselines/) preserves superseded package baselines.
+- [Evolution results](evaluation/harness-evolution-results.md) distinguish current
+  deterministic checks from live runtime evidence and remaining release checks.
+- [Lightweight harness decisions](research/lightweight-harness-decisions.md) map
+  external research to adopted changes and the deferred delegation experiment.
 
 ## Planning
 
@@ -29,4 +33,4 @@ Repository execution plans belong under `docs/plans/active/` while active and `d
 
 Current user requirements and candidate-specific executable evidence outrank this documentation. Normative documents outrank historical evaluation and research. If two normative sources disagree, stop, record the conflict, and fix the source-of-truth map before relying on either.
 
-The core contract defines the shared target; runtime maps and package references describe shipped adapters. Differences explicitly recorded in the contract catalog are pending implementation, not behavioral parity or permission to activate a workflow.
+The core contract defines the shared target; runtime maps and package references describe shipped adapters. Declared conformance in the contract catalog is separate from demonstrated model behavior and never authorizes workflow activation.
