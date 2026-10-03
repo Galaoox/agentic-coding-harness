@@ -25,7 +25,9 @@ packages/
 
 ## Runtime boundaries
 
-Codex v1.3 and OpenCode v0.2 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` contains only shared invariants: Direct/Standard routing, modifiers, evidence authority, one writer, one correction and terminal states. Runtime packages own their activation, agent/tool configuration, permissions, lifecycle semantics and installation.
+Codex v1.3 and OpenCode v0.2 are supported runtime adapters. `packages/core/contracts/evidence-driven-orchestration.md` owns the canonical runtime-neutral target: routing, optional plans, continuity, reproduction, evidence integrity, one writer, three corrections per independent root defect, and terminal states. Runtime packages own activation, agents, tools, models, permissions, lifecycle, and installation.
+
+The shared target and shipped adapters are not yet equivalent. This contract-only update leaves both distributables and their versions unchanged. The [contract catalog](contracts/index.md#adapter-conformance-gaps) records gaps rather than asserting runtime parity. Local OpenCode enhancements are reconciled into shared behavior, not copied as global configuration or personal permission policy.
 
 ## Codex v1.3 design
 
@@ -43,7 +45,7 @@ Standard
 
 `Direct` is permitted only when outcome, edit location, risk and deterministic evidence are clear. Root may write only on this route. Any uncertainty promotes work to `Standard`.
 
-`Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. `long-running` and `high-risk` modify Standard safeguards without creating separate role graphs or state machines.
+In the shipped adapter, `Standard` keeps one tracked-change owner. Explorer and Verifier are gated, not default stages. Its `long-running` and `high-risk` modify Standard safeguards, and post-edit Direct failures promote to Standard with one correction total. These are current mechanics, not claims of conformance to the updated shared correction and continuity contract.
 
 The distributable reference map starts at `packages/codex/skills/codex-orchestrator/references/index.md` and loads route, modifier, model, and evidence references conditionally. This document intentionally does not duplicate every gate.
 
@@ -53,7 +55,7 @@ The distributable reference map starts at `packages/codex/skills/codex-orchestra
 
 OpenCode permissions are static defense-in-depth, not sandboxing. In particular, a Standard Root's non-writing role is contractual, and any agent granted shell could write unless shell is also constrained. Explorer denies shell entirely; Verifier accepts only an approval-gated shell allowlist. The runner uses JSONL only as audit telemetry and gives authority to external deterministic evidence.
 
-The adapter was capability-tested on OpenCode 1.18.27. The exact observed behavior and unsupported assumptions are in `docs/research/opencode-capability-matrix.md`.
+The adapter was capability-tested on OpenCode 1.18.27. The exact observed behavior and unsupported assumptions are in `docs/research/opencode-capability-matrix.md`. Like the shipped Codex adapter, it retains one correction total, post-edit Direct escalation, and Standard-only modifiers pending a separately scoped implementation of the shared target.
 
 ## Evidence authority
 

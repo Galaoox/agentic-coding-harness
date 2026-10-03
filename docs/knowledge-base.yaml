@@ -24,6 +24,7 @@ documents:
   - {path: docs/research/opencode-capability-matrix.md, authority: evidence, status: completed, scope: opencode}
   - {path: docs/baselines/codex-orchestrator-v1.1.md, authority: historical, status: superseded, scope: codex}
 
+# These scenarios measure unchanged shipped adapters, not full shared-target conformance.
 context_scenarios:
   repository-bootstrap:
     max_bytes: 1600

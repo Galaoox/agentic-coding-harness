@@ -9,7 +9,7 @@ This directory is the repository knowledge base. `AGENTS.md` is the compact entr
 | Architecture and runtime boundaries | [`architecture.md`](architecture.md) |
 | Shared orchestration invariants | [`../packages/core/contracts/evidence-driven-orchestration.md`](../packages/core/contracts/evidence-driven-orchestration.md) |
 | Retrieved-memory authority | [`../packages/core/principles/memory-authority.md`](../packages/core/principles/memory-authority.md) |
-| Contract catalog | [`contracts/index.md`](contracts/index.md) |
+| Contract catalog, local comparison, and adapter conformance gaps | [`contracts/index.md`](contracts/index.md) |
 | Codex runtime map | [`runtimes/codex.md`](runtimes/codex.md) |
 | OpenCode runtime map | [`runtimes/opencode.md`](runtimes/opencode.md) |
 | Machine-readable knowledge/context catalog | [`knowledge-base.yaml`](knowledge-base.yaml) |
@@ -28,3 +28,5 @@ Repository execution plans belong under `docs/plans/active/` while active and `d
 ## Authority
 
 Current user requirements and candidate-specific executable evidence outrank this documentation. Normative documents outrank historical evaluation and research. If two normative sources disagree, stop, record the conflict, and fix the source-of-truth map before relying on either.
+
+The core contract defines the shared target; runtime maps and package references describe shipped adapters. Differences explicitly recorded in the contract catalog are pending implementation, not behavioral parity or permission to activate a workflow.

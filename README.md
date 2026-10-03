@@ -21,7 +21,9 @@ Exactly two routes are supported:
 | `Direct` | Outcome, edit location, risk, and deterministic evidence are clear | Root implements → checks → terminal state |
 | `Standard` | Any Direct gate is false or uncertain | Explore if gated → one Implementer → checks → gated fresh review → terminal state |
 
-`long-running` and `high-risk` modify Standard; they are not routes. Work remains serial with one writer for coupled changes and at most one correction.
+The [canonical shared contract](packages/core/contracts/evidence-driven-orchestration.md) keeps one writer and permits three corrections per independent root defect, excluding detection. Budgets survive route, actor, session, and name changes; an unresolved required defect after the third correction stops dependent work and prevents verified delivery. A bounded error alone does not escalate Direct when its gates still hold.
+
+In that target, `long-running` supports cross-session continuity on either route and checkpoints require authorization; `high-risk` excludes Direct. The shipped adapters still use one total correction and Standard-only modifiers. This contract-only update does not change their implementation or invocation: see [adapter conformance gaps](docs/contracts/index.md#adapter-conformance-gaps).
 
 ## Model policy for Codex
 
