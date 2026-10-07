@@ -6,7 +6,7 @@ A multi-runtime monorepo for bounded, evidence-driven software-development workf
 Supported adapters:
 
 - Codex v1.4 — explicitly invoked skill; Sol `medium` by default and `high` as the hard ceiling.
-- OpenCode v0.3 — project-scoped command/agent overlay, provider-neutral, targeting OpenCode 1.18.x.
+- OpenCode adapter v0.5 — selectable primary-agent mode with optional interactive command shortcut, provider-neutral, targeting stable OpenCode >=2.0.24,<3.
 
 ## Knowledge and context
 
@@ -74,6 +74,7 @@ uv run python -m py_compile \
   scripts/run_codex_smoke.py \
   scripts/smoke_evidence.py \
   scripts/prepare_smoke_fixture.py \
+  scripts/opencode_runtime.py \
   packages/opencode/install/install.py \
   packages/opencode/install/verify_install.py
 git diff --check

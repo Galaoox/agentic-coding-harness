@@ -13,6 +13,13 @@ Package references must be self-contained after installation. They may summarize
 
 The prior contract-only update left Codex v1.3 and OpenCode v0.2 unchanged. Codex v1.4 and OpenCode v0.3 now specify the six shared capability groups below. Static validation still does not prove runtime model behavior.
 
+OpenCode v0.4 retains those specifications and adds explicit primary-agent
+selection as an entry point; `/orchestrate` is an optional shortcut.
+
+OpenCode adapter v0.5 targets runtime 2.x exclusively with native V2 permissions
+and command metadata. The shared capability specifications remain unchanged;
+runtime migration does not establish full behavioral conformance.
+
 The local OpenCode workflow was inspected and backed up on 2026-10-03: `agentic-harness` version `0.7.0-local.1`, based on upstream adapter `0.2.0` at `d9f09c31b596f17781bf609f88509c50a13ec741`. The snapshot preserves 27 files across that complete workflow and `controlled-technical-writing`, including their runtime dependencies and original manifest. Five agent files differ from the original manifest; current bytes, not old hashes, are the recovery source. The writing skill is backup-only and introduces no shared mandate or activation.
 
 ## Historical local workflow comparison

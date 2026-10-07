@@ -138,7 +138,8 @@ def test_install_writes_current_version_and_verifies_modular_references(tmp_path
 
     assert INSTALLER.verify_install(target) == []
     manifest = INSTALLER.manifest_path(target).read_text(encoding="utf-8")
-    assert '"version": "0.3.0"' in manifest
+    assert '"version": "0.5.0"' in manifest
+    assert '"runtime_major": 2' in manifest
     for name in ("index.md", "direct.md", "standard.md", "evidence.md", "long-running.md", "high-risk.md"):
         assert (target / ".opencode/references" / name).is_file()
 
@@ -157,6 +158,16 @@ def test_verify_install_rejects_modified_file_and_version_drift(tmp_path: Path) 
 
     assert any("version mismatch" in error for error in errors)
     assert any("digest mismatch" in error for error in errors)
+
+
+def test_verify_install_rejects_runtime_major_drift(tmp_path: Path) -> None:
+    target = tmp_path / "target"
+    INSTALLER.install(target)
+    path = INSTALLER.manifest_path(target)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["runtime_major"] = 1
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert any("runtime major mismatch" in error for error in INSTALLER.verify_install(target))
 
 
 def test_verify_install_reports_missing_command(tmp_path: Path) -> None:

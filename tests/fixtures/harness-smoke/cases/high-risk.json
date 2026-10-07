@@ -1,6 +1,6 @@
 {
   "id": "high-risk",
-  "message": "{invocation} Use high-risk Standard. Correct calculator.is_allowed: only token 'valid' may authorize. Preserve add. Baseline, rollback and positive/negative assertions are required, then fresh independent verification. Change only calculator.py and run python check_outcome.py high-risk. No external effects.",
+  "message": "{invocation} Use high-risk Standard. Correct calculator.is_allowed: only the plain string 'valid' may authorize; reject nonstrings and objects or string subclasses with custom equality. Preserve add. The edit location and required boundary are known; gate exploration on unresolved uncertainty. Baseline, exact-byte rollback and positive/negative assertions are required, then fresh independent verification. Change only calculator.py and run python check_outcome.py high-risk. The fresh Verifier can execute the existing read-only acceptance wrapper with its allowed command: uv run pytest -q -p no:cacheprovider test_high_risk_acceptance.py. The evaluation inherits the repository's existing pytest environment; do not install dependencies or modify the wrapper/checks. No external effects.",
   "allowed_changes": [
     "calculator.py"
   ],

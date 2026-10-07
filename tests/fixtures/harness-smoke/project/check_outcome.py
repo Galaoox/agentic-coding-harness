@@ -12,7 +12,13 @@ if mode in {"direct", "resume"}:
     assert add(0, 0) == 0
 if mode == "high-risk":
     assert is_allowed("valid") is True
-    for token in ("wrong", "", None):
+    class EqualToAnything:
+        def __eq__(self, other):
+            return True
+    class MisleadingString(str):
+        def __eq__(self, other):
+            return True
+    for token in ("wrong", "", None, 0, True, b"valid", EqualToAnything(), MisleadingString("wrong")):
         assert is_allowed(token) is False
     assert add(2, 3) == -1, "unrelated behavior must remain unchanged"
 if mode in {"unchanged", "causal"}:

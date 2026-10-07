@@ -4,7 +4,7 @@ supported_runtimes:
   - opencode
 runtime_versions:
   codex: 1.4.0
-  opencode: 0.3.0
+  opencode: 0.5.0
 
 # Specified in both installed adapters; model-backed conformance remains separate.
 adapter_conformance:
@@ -16,6 +16,7 @@ adapter_conformance:
   premise-browser: {codex: specified, opencode: specified, behavioral_evidence: pending}
 
 documents:
+  - {path: docs/evaluation/opencode-v2-migration-results.md, authority: evidence, status: current, scope: opencode}
   - {path: docs/evaluation/harness-evolution-results.md, authority: evidence, status: current, scope: repository}
   - {path: docs/research/lightweight-harness-decisions.md, authority: reference, status: current, scope: repository}
   - {path: docs/evaluation/harness-smoke-guide.md, authority: reference, status: current, scope: repository}
@@ -39,6 +40,7 @@ documents:
 
 # Budgets measure LF-normalized declared package context, not global rules or tokens.
 # OpenCode limits include reproduction, causal budgets and planning added in v0.3.
+# v0.5 Direct/Standard limits add 200 bytes for native V2 ordered permissions.
 context_scenarios:
   repository-bootstrap:
     max_bytes: 1600
@@ -82,7 +84,7 @@ context_scenarios:
       - packages/codex/skills/codex-orchestrator/references/evidence.md
       - packages/codex/skills/codex-orchestrator/references/high-risk.md
   opencode-direct:
-    max_bytes: 5500
+    max_bytes: 5700
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md
@@ -90,7 +92,7 @@ context_scenarios:
       - packages/opencode/overlay/.opencode/references/direct.md
       - packages/opencode/overlay/.opencode/references/evidence.md
   opencode-standard:
-    max_bytes: 6000
+    max_bytes: 6200
     always:
       - packages/opencode/overlay/.opencode/agents/harness-orchestrator.md
       - packages/opencode/overlay/.opencode/references/index.md

@@ -1,7 +1,7 @@
 # Architecture
 <!-- supported-runtimes: codex, opencode -->
 
-Codex v1.4 and OpenCode v0.3 are self-contained adapters for the
+Codex v1.4 and OpenCode adapter v0.5 (runtime 2.x, minimum 2.0.24) are self-contained adapters for the
 [shared evidence-driven contract](../packages/core/contracts/evidence-driven-orchestration.md).
 `AGENTS.md` is the compact entry; [the index](index.md) and
 [catalog](knowledge-base.yaml) own knowledge authority and conditional context.
@@ -20,8 +20,9 @@ deterministic checks and gated fresh review. Root maintains the plan on either
 route; high-risk excludes Direct; continuity may modify either route.
 
 Codex activates only through explicit skill invocation and retains Sol medium
-with high ceiling. OpenCode activates only through `/orchestrate` and remains
-provider-neutral. Its permissions are defense-in-depth: shell can write, and a
+with high ceiling. OpenCode activates through explicit primary-agent selection
+or the optional `/orchestrate` shortcut and remains provider-neutral. Its
+permissions are defense-in-depth: shell can write, and a
 Standard Root's non-writing role is contractual. Neither prompts nor static
 permission checks constitute a sandbox.
 

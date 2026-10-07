@@ -1,7 +1,7 @@
 ---
-description: Run the evidence-driven Direct or Standard orchestration flow.
+description: Optional shortcut to the evidence-driven Direct or Standard flow.
 agent: harness-orchestrator
-subtask: false
+subagent: false
 ---
 Run the installed evidence-driven orchestration flow for this explicit request:
 

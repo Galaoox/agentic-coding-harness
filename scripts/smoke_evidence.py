@@ -47,11 +47,11 @@ def output_text(value: str | bytes | None) -> str:
     return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else value or ""
 
 
-def execute(command: list[str], cwd: Path, timeout: int) -> dict:
+def execute(command: list[str], cwd: Path, timeout: int, *, env: dict | None = None) -> dict:
     try:
         options = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt" else {"start_new_session": True}
         process = subprocess.Popen(command, cwd=cwd, text=True, encoding="utf-8", errors="replace",
-                                   stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options)
+                                   stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, **options)
         try:
             stdout, stderr = process.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:

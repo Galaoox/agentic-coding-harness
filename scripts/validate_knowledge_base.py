@@ -240,7 +240,8 @@ def validate_knowledge_base(root: Path) -> list[str]:
         for runtime, label in (("codex", "Codex"), ("opencode", "OpenCode")):
             version = actual_versions[runtime]
             display_version = version.rsplit(".", 1)[0] if version.count(".") == 2 else version
-            if version and f"{label} v{display_version}" not in content:
+            markers = (f"{label} v{display_version}", f"{label} adapter v{display_version}")
+            if version and not any(marker in content for marker in markers):
                 errors.append(f"runtime version marker missing or stale for {runtime} in {relative}")
 
     model_policy = root / "packages/codex/skills/codex-orchestrator/references/model-routing.md"

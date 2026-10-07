@@ -38,7 +38,7 @@ def test_repository_has_indexed_knowledge_base() -> None:
     data = load_catalog()
     assert data["schema_version"] == 1
     assert set(data["supported_runtimes"]) == {"codex", "opencode"}
-    assert data["runtime_versions"] == {"codex": "1.4.0", "opencode": "0.3.0"}
+    assert data["runtime_versions"] == {"codex": "1.4.0", "opencode": "0.5.0"}
 
 
 def test_catalogued_documents_are_unique_and_exist() -> None:
@@ -63,7 +63,7 @@ def test_compact_agents_file_maps_to_current_support() -> None:
 def test_current_architecture_uses_current_runtime_versions_and_references() -> None:
     content = (ROOT / "docs/architecture.md").read_text(encoding="utf-8")
     assert "Codex v1.4" in content
-    assert "OpenCode v0.3" in content
+    assert "OpenCode adapter v0.5" in content
     assert "references/orchestration-contract.md" not in content
 
 

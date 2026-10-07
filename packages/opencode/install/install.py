@@ -11,6 +11,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 OVERLAY_ROOT = PACKAGE_ROOT / "overlay" / ".opencode"
 VERSION = (PACKAGE_ROOT / "VERSION").read_text(encoding="utf-8").strip()
 MANIFEST_NAME = ".agentic-coding-harness-opencode.json"
+RUNTIME_MAJOR = 2
 
 
 class InstallConflict(RuntimeError):
@@ -85,7 +86,7 @@ def install(target: Path, dry_run: bool = False) -> list[Path]:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
     manifest_contents = {relative_overlay_path(source).as_posix(): digest(overlay_target / relative_overlay_path(source)) for source in overlay_files()}
-    manifest_file.write_text(json.dumps({"version": VERSION, "files": manifest_contents}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_file.write_text(json.dumps({"version": VERSION, "runtime_major": RUNTIME_MAJOR, "files": manifest_contents}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return planned
 
 
@@ -172,6 +173,8 @@ def verify_install(target: Path) -> list[str]:
             else:
                 if payload.get("version") != VERSION:
                     errors.append(f"version mismatch: manifest={payload.get('version')!r}, package={VERSION!r}")
+                if payload.get("runtime_major") != RUNTIME_MAJOR:
+                    errors.append("runtime major mismatch: this overlay requires OpenCode v2")
                 files = payload.get("files")
                 if not isinstance(files, dict):
                     errors.append("install manifest files must be a mapping")

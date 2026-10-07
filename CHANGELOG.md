@@ -4,6 +4,15 @@ All notable changes to this repository are documented here.
 
 ## Unreleased
 
+- OpenCode adapter v0.5 targets stable OpenCode >=2.0.24,<3 using native ordered
+  permissions, discoverable worker subagents and V2 command metadata. Installation
+  manifests record runtime major 2. Smokes reject unsupported executables before
+  model calls and use private servers and explicit model variants; V1-only flags
+  are rejected. Usage reports distinguish root-session tokens from worker costs.
+
+- OpenCode v0.4 activates when its primary agent is selected; ordinary requests
+  need no command prefix. `/orchestrate` remains an optional shortcut.
+
 - Codex v1.4 / OpenCode v0.3 specify all six shared capabilities, with model conformance reported separately.
 - Windows/Linux CI, portable catalog paths, complete install inventories and Verifier shell-policy validation.
 - Externally checked runtime smoke adapters, candidate snapshots, structured timeouts and measured usage.

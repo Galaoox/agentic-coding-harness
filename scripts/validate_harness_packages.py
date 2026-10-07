@@ -48,10 +48,8 @@ def frontmatter(path: Path, errors: list[str]) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {}
 
 
-def action(permission: Any, key: str) -> Any:
-    if not isinstance(permission, dict):
-        return None
-    return permission.get(key)
+def rule(action: str, resource: str, effect: str) -> dict[str, str]:
+    return {"action": action, "resource": resource, "effect": effect}
 
 
 def validate_opencode_package(root: Path) -> list[str]:
@@ -82,37 +80,38 @@ def validate_opencode_package(root: Path) -> list[str]:
     command_data = frontmatter(command, errors)
     if command_data.get("agent") != "harness-orchestrator":
         errors.append("command agent must be harness-orchestrator")
-    if command_data.get("subtask") is not False:
-        errors.append("command subtask must be false")
+    if command_data.get("subagent") is not False or "subtask" in command_data:
+        errors.append("command subagent must be false using native V2 metadata")
     parsed = {name: frontmatter(path, errors) for name, path in agent_paths.items()}
     root_data = parsed.get("harness-orchestrator", {})
     if root_data.get("mode") != "primary":
         errors.append("harness-orchestrator must be primary")
-    task = action(root_data.get("permission"), "task")
-    if not isinstance(task, dict) or task.get("*") != "deny" or {name for name, value in task.items() if value == "allow"} != ALLOWED_WORKERS:
-        errors.append("root task allowlist must allow exactly the three harness workers")
+    for name, data in parsed.items():
+        if "permission" in data or not isinstance(data.get("permissions"), list):
+            errors.append(f"{name} must use native V2 permissions")
+        if name != "harness-orchestrator" and data.get("hidden") is True:
+            errors.append(f"{name} must remain discoverable in the V2 subagent catalog")
+    root_rules = [rule("subagent", "*", "deny")] + [
+        rule("subagent", name, "allow") for name in ("harness-explorer", WRITER, "harness-verifier")
+    ]
+    if root_data.get("permissions") != root_rules:
+        errors.append("root subagent allowlist must allow exactly the three harness workers in order")
+    shell_rules = [rule("shell", "*", "ask")] + [
+        rule("shell", command, "allow") for command in ("git diff --check", "git status --short --branch", "uv run pytest *")
+    ]
     for name in READ_ONLY:
         data = parsed.get(name, {})
-        if data.get("mode") != "subagent" or data.get("hidden") is not True:
-            errors.append(f"{name} must be hidden subagent")
-        permissions = data.get("permission", {})
-        if action(permissions, "edit") != "deny" or action(permissions, "task") != "deny":
-            errors.append(f"{name} must deny edit and task")
-    explorer = parsed.get("harness-explorer", {}).get("permission", {})
-    if action(explorer, "bash") != "deny":
-        errors.append("harness-explorer must deny bash")
-    verifier_shell = action(parsed.get("harness-verifier", {}).get("permission", {}), "bash")
-    expected_shell = {
-        "*": "ask",
-        "git diff --check": "allow",
-        "git status --short --branch": "allow",
-        "uv run pytest *": "allow",
-    }
-    if verifier_shell != expected_shell:
-        errors.append("harness-verifier bash must match the approval-gated shell allowlist")
+        if data.get("mode") != "subagent":
+            errors.append(f"{name} must be a subagent")
+        permissions = data.get("permissions")
+        expected_rules = ([rule("edit", "*", "deny"), rule("shell", "*", "deny"), rule("subagent", "*", "deny")]
+                          if name == "harness-explorer" else
+                          [rule("edit", "*", "deny"), rule("subagent", "*", "deny"), *shell_rules])
+        if permissions != expected_rules:
+            errors.append(f"{name} must deny edit/subagent and preserve its shell allowlist")
     implementer = parsed.get(WRITER, {})
-    if implementer.get("mode") != "subagent" or action(implementer.get("permission", {}), "edit") != "allow" or action(implementer.get("permission", {}), "task") != "deny":
-        errors.append("harness-implementer must be the only writer subagent with task denied")
+    if implementer.get("mode") != "subagent" or implementer.get("permissions") != [rule("edit", "*", "allow"), rule("subagent", "*", "deny"), *shell_rules]:
+        errors.append("harness-implementer must be the only writer subagent with delegation denied and bounded shell")
     reference_content = "\n".join(read(path, errors) for path in sorted(reference_dir.glob("*.md")))
     for term in REQUIRED_TERMS:
         if term not in reference_content:
